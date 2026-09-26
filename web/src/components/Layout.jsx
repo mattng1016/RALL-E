@@ -23,6 +23,9 @@ export default function Layout() {
           <NavLink to="/" end className={navClass}>
             Discover
           </NavLink>
+          <NavLink to="/my-sessions" className={navClass}>
+            My sessions
+          </NavLink>
           <NavLink to="/create" className={navClass}>
             + Create session
           </NavLink>

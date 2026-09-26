@@ -1,6 +1,14 @@
 import { useCallback, useEffect, useState } from 'react'
 import { useParams } from 'react-router-dom'
-import { getCurrentUser, getMessages, getSession, joinSession, sendMessage, subscribeToChanges } from '../lib/api'
+import {
+  getCurrentUser,
+  getMessages,
+  getSession,
+  joinSession,
+  leaveSession,
+  sendMessage,
+  subscribeToChanges,
+} from '../lib/api'
 import { SPORT_EMOJI } from '../lib/constants'
 import { capitalize, formatDateTime, formatPrice } from '../lib/format'
 
@@ -52,7 +60,7 @@ export default function SessionDetail() {
   const user = getCurrentUser()
   const [session, setSession] = useState(null)
   const [error, setError] = useState(null)
-  const [joining, setJoining] = useState(false)
+  const [busy, setBusy] = useState(false)
 
   const load = useCallback(
     () =>
@@ -67,22 +75,23 @@ export default function SessionDetail() {
     return subscribeToChanges(
       [
         { table: 'sessions', filter: `id=eq.${id}` },
-        { table: 'session_participants', filter: `session_id=eq.${id}` },
+        // Unfiltered: Supabase Realtime can't filter DELETE events, so a filter would miss people leaving.
+        { table: 'session_participants' },
       ],
       load,
     )
   }, [load, id])
 
-  async function handleJoin() {
-    setJoining(true)
+  async function runAction(action) {
+    setBusy(true)
     setError(null)
     try {
-      await joinSession(id, user.id)
+      await action(id, user.id)
       await load()
     } catch (err) {
       setError(err.message)
     } finally {
-      setJoining(false)
+      setBusy(false)
     }
   }
 
@@ -91,6 +100,7 @@ export default function SessionDetail() {
 
   const spotsLeft = session.capacity - session.participant_count
   const hasJoined = session.participants.some((p) => p.id === user.id)
+  const isHost = session.host_id === user.id
 
   return (
     <div className="h-full overflow-y-auto">
@@ -136,15 +146,26 @@ export default function SessionDetail() {
 
           {error && <p className="text-sm text-red-600">{error}</p>}
 
-          {hasJoined ? (
-            <p className="rounded-xl bg-emerald-50 py-3 text-center font-semibold text-emerald-700">You're in! ✓</p>
+          {isHost ? (
+            <p className="rounded-xl bg-emerald-50 py-3 text-center font-semibold text-emerald-700">You're hosting this session ✓</p>
+          ) : hasJoined ? (
+            <div className="space-y-2">
+              <p className="rounded-xl bg-emerald-50 py-3 text-center font-semibold text-emerald-700">You're in! ✓</p>
+              <button
+                onClick={() => runAction(leaveSession)}
+                disabled={busy}
+                className="w-full text-sm text-slate-500 hover:text-red-600 hover:underline disabled:opacity-50"
+              >
+                {busy ? 'Leaving…' : "Can't make it? Leave session"}
+              </button>
+            </div>
           ) : (
             <button
-              onClick={handleJoin}
-              disabled={joining || spotsLeft <= 0}
+              onClick={() => runAction(joinSession)}
+              disabled={busy || spotsLeft <= 0}
               className="w-full rounded-xl bg-emerald-600 py-3 font-semibold text-white hover:bg-emerald-700 disabled:opacity-50"
             >
-              {spotsLeft <= 0 ? 'Session full' : joining ? 'Joining…' : 'Join session'}
+              {spotsLeft <= 0 ? 'Session full' : busy ? 'Joining…' : 'Join session'}
             </button>
           )}
         </div>

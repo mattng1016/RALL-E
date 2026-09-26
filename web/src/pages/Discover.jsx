@@ -12,6 +12,8 @@ export default function Discover() {
   const [sessions, setSessions] = useState([])
   const [error, setError] = useState(null)
   const [listOpen, setListOpen] = useState(false)
+  const [selectedSessionId, setSelectedSessionId] = useState(null)
+  const [focusRequest, setFocusRequest] = useState(null)
 
   useEffect(() => {
     getSessions({ sport, level })
@@ -22,7 +24,14 @@ export default function Discover() {
   return (
     <div className="relative h-full overflow-hidden">
       <section className="absolute inset-0">
-        <SessionMap sessions={sessions} />
+        <SessionMap
+          sessions={sessions}
+          selectedSessionId={selectedSessionId}
+          focusRequest={focusRequest}
+          listOpen={listOpen}
+          onSelect={setSelectedSessionId}
+          onDeselect={(sessionId) => setSelectedSessionId((current) => (current === sessionId ? null : current))}
+        />
       </section>
 
       {!listOpen && (
@@ -46,7 +55,7 @@ export default function Discover() {
         aria-label="Available sessions"
         aria-hidden={!listOpen}
         inert={!listOpen}
-        className={`absolute inset-y-0 left-0 z-[999] flex w-[min(22rem,calc(100%-1rem))] flex-col border-r border-slate-200 bg-white shadow-xl transition-transform duration-300 ease-out ${listOpen ? 'translate-x-0' : '-translate-x-full'}`}
+        className={`absolute inset-y-0 left-0 z-[999] flex w-[min(32rem,calc(100%-1rem))] flex-col border-r border-slate-200 bg-white shadow-xl transition-transform duration-300 ease-out ${listOpen ? 'translate-x-0' : '-translate-x-full'}`}
       >
         {listOpen && (
           <button
@@ -87,7 +96,15 @@ export default function Discover() {
           {error && <p className="text-sm text-red-600">{error}</p>}
           {!error && sessions.length === 0 && <p className="text-sm text-slate-500">No open sessions match these filters.</p>}
           {sessions.map((session) => (
-            <SessionCard key={session.id} session={session} />
+            <SessionCard
+              key={session.id}
+              session={session}
+              selected={selectedSessionId === session.id}
+              onClick={() => {
+                setSelectedSessionId(session.id)
+                setFocusRequest((current) => ({ sessionId: session.id, token: (current?.token ?? 0) + 1 }))
+              }}
+            />
           ))}
         </div>
       </aside>

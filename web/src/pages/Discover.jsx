@@ -1,7 +1,7 @@
-import { useEffect, useState } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 import SessionCard from '../components/SessionCard'
 import SessionMap from '../components/SessionMap'
-import { getCurrentUser, getSessions } from '../lib/api'
+import { getCurrentUser, getSessions, subscribeToChanges } from '../lib/api'
 import { LEVELS, SPORTS } from '../lib/constants'
 import { capitalize } from '../lib/format'
 
@@ -12,11 +12,18 @@ export default function Discover() {
   const [sessions, setSessions] = useState([])
   const [error, setError] = useState(null)
 
+  const load = useCallback(
+    () =>
+      getSessions({ sport, level })
+        .then(setSessions)
+        .catch((err) => setError(err.message)),
+    [sport, level],
+  )
+
   useEffect(() => {
-    getSessions({ sport, level })
-      .then(setSessions)
-      .catch((err) => setError(err.message))
-  }, [sport, level])
+    load()
+    return subscribeToChanges([{ table: 'sessions' }, { table: 'session_participants' }], load)
+  }, [load])
 
   return (
     <div className="flex h-full flex-col md:flex-row">

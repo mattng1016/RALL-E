@@ -9,3 +9,158 @@ body,
 body {
   @apply bg-slate-50 text-slate-900 antialiased;
 }
+
+:root {
+  --drawy-navy: #1a265a;
+  --drawy-lime: #97fb57;
+  --drawy-orange: #fd6326;
+  --drawy-teal: #50a5b1;
+  --drawy-cream: #fef6ed;
+}
+
+.drawy-map .leaflet-top.leaflet-left {
+  top: auto;
+  right: 12px;
+  bottom: 38px;
+  left: auto;
+}
+
+.drawy-map .leaflet-control-zoom {
+  margin-top: 0;
+}
+
+.drawy-map .drawy-session-popup .leaflet-popup-content-wrapper {
+  padding: 0;
+  border-radius: 18px;
+  background: transparent;
+  box-shadow: none;
+}
+
+.drawy-map .drawy-session-popup .leaflet-popup-content {
+  width: 300px !important;
+  margin: 0;
+}
+
+.drawy-map .drawy-session-popup .leaflet-popup-tip {
+  background: var(--drawy-cream);
+}
+
+.drawy-map .drawy-session-popup .leaflet-popup-close-button {
+  top: 9px !important;
+  right: 11px !important;
+  z-index: 2;
+  color: var(--drawy-navy) !important;
+  font-size: 24px !important;
+}
+
+.drawy-activity-card {
+  position: relative;
+  overflow: hidden;
+  padding: 20px;
+  border: 1px solid rgb(26 38 90 / 10%);
+  border-radius: 18px;
+  background: var(--drawy-cream);
+  box-shadow: 0 12px 32px rgb(26 38 90 / 20%);
+  color: var(--drawy-navy);
+}
+
+.drawy-activity-badge {
+  display: inline-flex;
+  margin-bottom: 10px;
+  padding: 4px 11px;
+  border-radius: 999px;
+  background: var(--drawy-lime);
+  color: var(--drawy-navy);
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+}
+
+.drawy-activity-card h2 {
+  margin: 0;
+  font-size: 21px;
+  font-weight: 800;
+  line-height: 1.15;
+}
+
+.drawy-activity-location {
+  margin: 6px 0 14px;
+  font-size: 13px;
+  line-height: 1.45;
+}
+
+.drawy-activity-players {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 13px 0;
+  border-top: 1px solid rgb(26 38 90 / 12%);
+  border-bottom: 1px solid rgb(26 38 90 / 12%);
+}
+
+.drawy-people-icon {
+  display: grid;
+  width: 38px;
+  height: 38px;
+  flex: 0 0 auto;
+  place-items: center;
+  border-radius: 12px;
+  background: var(--drawy-lime);
+  color: var(--drawy-navy);
+  font-size: 23px;
+}
+
+.drawy-people-icon svg {
+  width: 30px;
+  fill: currentColor;
+}
+
+.drawy-activity-players div,
+.drawy-activity-cost {
+  display: flex;
+  flex-direction: column;
+}
+
+.drawy-activity-players strong {
+  font-size: 17px;
+  line-height: 1.2;
+}
+
+.drawy-activity-players span:not(.drawy-people-icon) {
+  margin-top: 3px;
+  font-size: 12px;
+}
+
+.drawy-activity-cost {
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+  padding: 13px 0;
+  font-size: 13px;
+}
+
+.drawy-activity-cost strong {
+  padding: 5px 12px;
+  border-radius: 999px;
+  background: var(--drawy-teal);
+  color: white;
+  font-size: 14px;
+}
+
+.drawy-map .drawy-activity-join {
+  display: block;
+  padding: 12px;
+  border-radius: 10px;
+  background: var(--drawy-orange);
+  color: white;
+  font-size: 14px;
+  font-weight: 800;
+  text-align: center;
+  text-decoration: none;
+  text-transform: uppercase;
+  transition: filter 150ms ease;
+}
+
+.drawy-activity-join:hover {
+  filter: brightness(0.94);
+}

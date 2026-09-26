@@ -1,7 +1,7 @@
 import { SPORT_EMOJI } from '../lib/constants'
 import { capitalize, formatDateTime, formatPrice } from '../lib/format'
 
-export default function SessionCard({ session, selected = false, onClick }) {
+export default function SessionCard({ session, tag, selected = false, onClick }) {
   const spotsLeft = session.capacity - session.participant_count
 
   return (
@@ -22,6 +22,7 @@ export default function SessionCard({ session, selected = false, onClick }) {
       </div>
 
       <div className="mt-3 flex flex-wrap gap-2 text-xs">
+        {tag && <span className="rounded-full bg-slate-900 px-2 py-1 text-white">{tag}</span>}
         <span className="rounded-full bg-slate-100 px-2 py-1">{capitalize(session.level)}</span>
         <span className={`rounded-full px-2 py-1 ${spotsLeft > 0 ? 'bg-emerald-100 text-emerald-800' : 'bg-red-100 text-red-800'}`}>
           {spotsLeft > 0 ? `${spotsLeft} of ${session.capacity} spots left` : 'Full'}

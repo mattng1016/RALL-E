@@ -3,6 +3,7 @@ import Layout from './components/Layout'
 import { getCurrentUser } from './lib/api'
 import CreateSession from './pages/CreateSession'
 import Discover from './pages/Discover'
+import MySessions from './pages/MySessions'
 import Onboarding from './pages/Onboarding'
 import SessionDetail from './pages/SessionDetail'
 
@@ -20,6 +21,7 @@ export default function App() {
             <Route path="/" element={<Discover />} />
             <Route path="/sessions/:id" element={<SessionDetail />} />
             <Route path="/create" element={<CreateSession />} />
+            <Route path="/my-sessions" element={<MySessions />} />
           </Route>
         </Route>
         <Route path="*" element={<Navigate to="/" replace />} />

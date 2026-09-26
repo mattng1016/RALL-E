@@ -1,5 +1,6 @@
+import { useEffect } from 'react'
 import { Link, NavLink, Outlet } from 'react-router-dom'
-import { getCurrentUser, usingMockData } from '../lib/api'
+import { getCurrentUser, syncCurrentUser, usingMockData } from '../lib/api'
 
 function navClass({ isActive }) {
   return `rounded-lg px-3 py-2 text-sm font-medium ${isActive ? 'bg-slate-900 text-white' : 'hover:bg-slate-100'}`
@@ -7,6 +8,10 @@ function navClass({ isActive }) {
 
 export default function Layout() {
   const user = getCurrentUser()
+
+  useEffect(() => {
+    syncCurrentUser()
+  }, [])
 
   return (
     <div className="flex h-full flex-col">
@@ -17,6 +22,9 @@ export default function Layout() {
         <nav className="flex items-center gap-1">
           <NavLink to="/" end className={navClass}>
             Discover
+          </NavLink>
+          <NavLink to="/my-sessions" className={navClass}>
+            My sessions
           </NavLink>
           <NavLink to="/create" className={navClass}>
             + Create session

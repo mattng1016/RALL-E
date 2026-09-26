@@ -31,6 +31,15 @@ export async function saveUser({ name, sport, level }) {
   return user
 }
 
+// The saved user can be missing from the database (onboarded in mock mode, or the DB was reset),
+// which makes joins and messages fail on the users foreign key.
+export async function syncCurrentUser() {
+  const user = getCurrentUser()
+  if (!supabase || !user) return
+  const { error } = await supabase.from('users').upsert(user)
+  if (error) console.error('Failed to sync user', error)
+}
+
 // ---------- Courts ----------
 
 export async function getCourts(sport) {
@@ -82,6 +91,27 @@ export async function getSessions({ sport, level } = {}) {
     .map(mockExpandSession)
 }
 
+// Every session the user is in (hosted or joined), past and upcoming, soonest first.
+export async function getMySessions(userId) {
+  if (supabase) {
+    const { data, error } = await supabase
+      .from('sessions')
+      .select(`${SESSION_LIST_SELECT}, me:session_participants!inner(user_id)`)
+      .eq('me.user_id', userId)
+      .order('start_time')
+    if (error) throw error
+    return data.map((s) => ({ ...s, participant_count: s.participants?.[0]?.count ?? 0 }))
+  }
+
+  const mySessionIds = new Set(
+    mock.sessionParticipants.filter((p) => p.user_id === userId).map((p) => p.session_id),
+  )
+  return mock.sessions
+    .filter((s) => mySessionIds.has(s.id))
+    .sort((a, b) => a.start_time.localeCompare(b.start_time))
+    .map(mockExpandSession)
+}
+
 export async function getSession(id) {
   if (supabase) {
     const { data, error } = await supabase.from('sessions').select(SESSION_DETAIL_SELECT).eq('id', id).single()
@@ -124,6 +154,39 @@ export async function joinSession(sessionId, userId) {
   if (joined.some((p) => p.user_id === userId)) return
   if (joined.length >= session.capacity) throw new Error('Session is full')
   mock.sessionParticipants.push({ session_id: sessionId, user_id: userId })
+}
+
+export async function leaveSession(sessionId, userId) {
+  if (supabase) {
+    const { error } = await supabase
+      .from('session_participants')
+      .delete()
+      .eq('session_id', sessionId)
+      .eq('user_id', userId)
+    if (error) throw error
+    return
+  }
+
+  const index = mock.sessionParticipants.findIndex((p) => p.session_id === sessionId && p.user_id === userId)
+  if (index !== -1) mock.sessionParticipants.splice(index, 1)
+}
+
+// ---------- Realtime ----------
+
+// Calls onChange whenever a row changes in any of the given tables; returns an unsubscribe function.
+// Tables must be in the supabase_realtime publication (see supabase/schema.sql).
+export function subscribeToChanges(listeners, onChange) {
+  if (!supabase) return () => {}
+
+  const channel = supabase.channel(`changes-${crypto.randomUUID()}`)
+  for (const { table, filter } of listeners) {
+    channel.on('postgres_changes', { event: '*', schema: 'public', table, ...(filter && { filter }) }, onChange)
+  }
+  channel.subscribe()
+
+  return () => {
+    supabase.removeChannel(channel)
+  }
 }
 
 // ---------- Chat ----------

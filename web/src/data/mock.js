@@ -17,16 +17,7 @@ export const courts = [
   { id: 'c6', name: 'Hillcrest Community Centre', sport: 'badminton', lat: 49.2437, lng: -123.1076, price_per_hour: 6 },
   { id: 'c7', name: 'Richmond Olympic Oval', sport: 'badminton', lat: 49.1747, lng: -123.1527, price_per_hour: 8 },
   { id: 'c8', name: 'Kerrisdale Community Centre', sport: 'badminton', lat: 49.234, lng: -123.156, price_per_hour: 5 },
-  { id: 'c9', name: 'Trout Lake Community Centre', sport: 'badminton', lat: 49.255, lng: -123.061, price_per_hour: 5 },
-  { id: 'c10', name: 'Strathcona Community Centre', sport: 'badminton', lat: 49.278, lng: -123.091, price_per_hour: 6 },
-  { id: 'c11', name: 'Roundhouse Community Centre', sport: 'badminton', lat: 49.273, lng: -123.122, price_per_hour: 7 },
-  { id: 'c12', name: 'Mount Pleasant Community Centre', sport: 'badminton', lat: 49.263, lng: -123.101, price_per_hour: 6 },
-  { id: 'c13', name: 'Sunset Community Centre', sport: 'badminton', lat: 49.224, lng: -123.101, price_per_hour: 5 },
-  { id: 'c14', name: 'Kitsilano Community Centre', sport: 'tennis', lat: 49.269, lng: -123.158, price_per_hour: 0 },
-  { id: 'c15', name: 'Vancouver Racquets Club', sport: 'tennis', lat: 49.267, lng: -123.117, price_per_hour: 18 },
-  { id: 'c16', name: 'Burnaby Lake Sports Complex', sport: 'tennis', lat: 49.241, lng: -122.976, price_per_hour: 10 },
-  { id: 'c17', name: 'Bonsor Recreation Complex', sport: 'badminton', lat: 49.223, lng: -123.012, price_per_hour: 7 },
-  { id: 'c18', name: 'Richmond Community Centre', sport: 'badminton', lat: 49.13, lng: -123.119, price_per_hour: 6 },
+  { id: 'c9', name: 'Stage 18 Badminton Richmond', sport: 'badminton', lat: 49.197, lng: -123.071, price_per_hour: 20},
 ]
 
 export const users = [

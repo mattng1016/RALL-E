@@ -29,6 +29,32 @@ body {
   margin-top: 0;
 }
 
+.drawy-cluster-marker {
+  display: grid;
+  place-items: center;
+  border: 0;
+  background: transparent;
+}
+
+.drawy-cluster-marker span {
+  display: grid;
+  width: 46px;
+  height: 46px;
+  place-items: center;
+  border: 3px solid var(--drawy-teal);
+  border-radius: 50%;
+  background: var(--drawy-navy);
+  box-shadow: 0 4px 14px rgb(26 38 90 / 32%);
+  color: var(--drawy-lime);
+  font-size: 15px;
+  font-weight: 800;
+  transition: transform 150ms ease;
+}
+
+.drawy-cluster-marker:hover span {
+  transform: scale(1.1);
+}
+
 .drawy-map .drawy-session-popup .leaflet-popup-content-wrapper {
   padding: 0;
   border-radius: 18px;

@@ -17,6 +17,7 @@ export const courts = [
   { id: 'c6', name: 'Hillcrest Community Centre', sport: 'badminton', lat: 49.2437, lng: -123.1076, price_per_hour: 6 },
   { id: 'c7', name: 'Richmond Olympic Oval', sport: 'badminton', lat: 49.1747, lng: -123.1527, price_per_hour: 8 },
   { id: 'c8', name: 'Kerrisdale Community Centre', sport: 'badminton', lat: 49.234, lng: -123.156, price_per_hour: 5 },
+  { id: 'c9', name: 'Stage 18 Badminton Richmond', sport: 'badminton', lat: 49.197, lng: -123.071, price_per_hour: 20},
 ]
 
 export const users = [

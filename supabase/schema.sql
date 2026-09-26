@@ -87,4 +87,4 @@ create policy "public access" on sessions for all using (true) with check (true)
 create policy "public access" on session_participants for all using (true) with check (true);
 create policy "public access" on messages for all using (true) with check (true);
 
-alter publication supabase_realtime add table messages;
+alter publication supabase_realtime add table messages, sessions, session_participants;

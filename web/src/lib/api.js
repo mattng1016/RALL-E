@@ -135,6 +135,24 @@ export async function joinSession(sessionId, userId) {
   mock.sessionParticipants.push({ session_id: sessionId, user_id: userId })
 }
 
+// ---------- Realtime ----------
+
+// Calls onChange whenever a row changes in any of the given tables; returns an unsubscribe function.
+// Tables must be in the supabase_realtime publication (see supabase/schema.sql).
+export function subscribeToChanges(listeners, onChange) {
+  if (!supabase) return () => {}
+
+  const channel = supabase.channel(`changes-${crypto.randomUUID()}`)
+  for (const { table, filter } of listeners) {
+    channel.on('postgres_changes', { event: '*', schema: 'public', table, ...(filter && { filter }) }, onChange)
+  }
+  channel.subscribe()
+
+  return () => {
+    supabase.removeChannel(channel)
+  }
+}
+
 // ---------- Chat ----------
 
 export async function getMessages(sessionId) {

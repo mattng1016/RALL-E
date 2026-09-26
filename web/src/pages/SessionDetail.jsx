@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useState } from 'react'
 import { useParams } from 'react-router-dom'
-import { getCurrentUser, getMessages, getSession, joinSession, sendMessage } from '../lib/api'
+import { getCurrentUser, getMessages, getSession, joinSession, sendMessage, subscribeToChanges } from '../lib/api'
 import { SPORT_EMOJI } from '../lib/constants'
 import { capitalize, formatDateTime, formatPrice } from '../lib/format'
 
@@ -12,7 +12,8 @@ function Chat({ sessionId, user }) {
 
   useEffect(() => {
     load()
-  }, [load])
+    return subscribeToChanges([{ table: 'messages', filter: `session_id=eq.${sessionId}` }], load)
+  }, [load, sessionId])
 
   async function handleSend(event) {
     event.preventDefault()
@@ -63,7 +64,14 @@ export default function SessionDetail() {
 
   useEffect(() => {
     load()
-  }, [load])
+    return subscribeToChanges(
+      [
+        { table: 'sessions', filter: `id=eq.${id}` },
+        { table: 'session_participants', filter: `session_id=eq.${id}` },
+      ],
+      load,
+    )
+  }, [load, id])
 
   async function handleJoin() {
     setJoining(true)

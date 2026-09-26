@@ -31,6 +31,15 @@ export async function saveUser({ name, sport, level }) {
   return user
 }
 
+// The saved user can be missing from the database (onboarded in mock mode, or the DB was reset),
+// which makes joins and messages fail on the users foreign key.
+export async function syncCurrentUser() {
+  const user = getCurrentUser()
+  if (!supabase || !user) return
+  const { error } = await supabase.from('users').upsert(user)
+  if (error) console.error('Failed to sync user', error)
+}
+
 // ---------- Courts ----------
 
 export async function getCourts(sport) {

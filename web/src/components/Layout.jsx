@@ -1,5 +1,6 @@
+import { useEffect } from 'react'
 import { Link, NavLink, Outlet } from 'react-router-dom'
-import { getCurrentUser, usingMockData } from '../lib/api'
+import { getCurrentUser, syncCurrentUser, usingMockData } from '../lib/api'
 
 function navClass({ isActive }) {
   return `rounded-lg px-3 py-2 text-sm font-medium ${isActive ? 'bg-slate-900 text-white' : 'hover:bg-slate-100'}`
@@ -7,6 +8,10 @@ function navClass({ isActive }) {
 
 export default function Layout() {
   const user = getCurrentUser()
+
+  useEffect(() => {
+    syncCurrentUser()
+  }, [])
 
   return (
     <div className="flex h-full flex-col">

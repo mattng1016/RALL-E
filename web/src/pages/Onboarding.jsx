@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { getCurrentUser, saveUser } from '../lib/api'
+import { useAuth } from '../lib/auth'
 import { LEVELS, SPORT_EMOJI, SPORTS } from '../lib/constants'
 import { capitalize } from '../lib/format'
 
@@ -18,8 +19,9 @@ function OptionButton({ selected, onClick, children }) {
 
 export default function Onboarding() {
   const navigate = useNavigate()
+  const { authUser, refreshProfile } = useAuth()
   const existing = getCurrentUser()
-  const [name, setName] = useState(existing?.name ?? '')
+  const [name, setName] = useState(existing?.name ?? authUser?.user_metadata?.name ?? '')
   const [sport, setSport] = useState(existing?.sport ?? 'badminton')
   const [level, setLevel] = useState(existing?.level ?? 'beginner')
   const [saving, setSaving] = useState(false)
@@ -30,7 +32,8 @@ export default function Onboarding() {
     setSaving(true)
     setError(null)
     try {
-      await saveUser({ name: name.trim(), sport, level })
+      await saveUser({ id: authUser?.id, name: name.trim(), sport, level })
+      if (authUser) await refreshProfile()
       navigate('/')
     } catch (err) {
       setError(err.message)

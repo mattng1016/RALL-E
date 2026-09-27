@@ -17,8 +17,22 @@ export function getCurrentUser() {
   return raw ? JSON.parse(raw) : null
 }
 
-export async function saveUser({ name, sport, level }) {
-  const user = { id: getCurrentUser()?.id ?? crypto.randomUUID(), name, sport, level }
+export function clearCurrentUser() {
+  localStorage.removeItem(USER_KEY)
+}
+
+// Loads the profile row of a signed-in account and caches it, so getCurrentUser() stays synchronous.
+export async function loadProfile(userId) {
+  const { data, error } = await supabase.from('users').select('*').eq('id', userId).maybeSingle()
+  if (error) throw error
+  if (data) localStorage.setItem(USER_KEY, JSON.stringify(data))
+  else clearCurrentUser()
+  return data
+}
+
+// Pass the auth user's id when signed in; mock mode generates one.
+export async function saveUser({ id, name, sport, level }) {
+  const user = { id: id ?? getCurrentUser()?.id ?? crypto.randomUUID(), name, sport, level }
 
   if (supabase) {
     const { error } = await supabase.from('users').upsert(user)

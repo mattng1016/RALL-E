@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { createSession, getCourts, getCurrentUser } from '../lib/api'
-import { LEVELS, SPORTS } from '../lib/constants'
+import { LEVELS, SPORT_EMOJI, SPORTS } from '../lib/constants'
 import { capitalize } from '../lib/format'
 import {
   defaultStartTime,
@@ -23,7 +23,7 @@ function Field({ label, children }) {
   )
 }
 
-const inputClass = 'w-full rounded-lg border border-slate-300 px-3 py-2'
+const inputClass = 'w-full rounded-lg border border-brand-navy/20 px-3 py-2'
 
 export default function CreateSession() {
   const navigate = useNavigate()
@@ -88,7 +88,7 @@ export default function CreateSession() {
 
   return (
     <div className="h-full overflow-y-auto p-6">
-      <form onSubmit={handleSubmit} className="mx-auto max-w-xl space-y-4 rounded-xl border border-slate-200 bg-white p-6">
+      <form onSubmit={handleSubmit} className="mx-auto max-w-xl space-y-4 rounded-xl border border-brand-navy/20 bg-brand-cream p-6">
         <h1 className="text-2xl font-bold">Create a session</h1>
 
         <div className="grid grid-cols-2 gap-4">
@@ -96,7 +96,7 @@ export default function CreateSession() {
             <select value={form.sport} onChange={(e) => update('sport', e.target.value)} className={inputClass}>
               {SPORTS.map((s) => (
                 <option key={s} value={s}>
-                  {capitalize(s)}
+                  {SPORT_EMOJI[s]} {capitalize(s)}
                 </option>
               ))}
             </select>
@@ -187,11 +187,11 @@ export default function CreateSession() {
           I'm a coach and this is a lesson
         </label>
 
-        {error && <p className="text-sm text-red-600">{error}</p>}
+        {error && <p className="text-sm text-brand-navy">{error}</p>}
 
         <button
           disabled={saving}
-          className="w-full rounded-xl bg-emerald-600 py-3 font-semibold text-white hover:bg-emerald-700 disabled:opacity-50"
+          className="w-full rounded-xl bg-brand-lime py-3 font-semibold text-brand-navy hover:bg-brand-lime/80 disabled:opacity-50"
         >
           {saving ? 'Publishing…' : 'Publish session'}
         </button>

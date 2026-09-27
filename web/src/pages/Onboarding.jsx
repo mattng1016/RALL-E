@@ -1,3 +1,4 @@
+import BrandWordmark from '../components/BrandWordmark'
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { getCurrentUser, saveUser } from '../lib/api'
@@ -10,7 +11,8 @@ function OptionButton({ selected, onClick, children }) {
     <button
       type="button"
       onClick={onClick}
-      className={`flex-1 rounded-xl border px-4 py-3 font-medium ${selected ? 'border-slate-900 bg-slate-900 text-white' : 'border-slate-300 bg-white hover:border-slate-500'}`}
+      aria-pressed={selected}
+      className={`min-w-0 flex-1 rounded-xl border px-2 py-3 text-sm font-medium transition-colors sm:px-4 sm:text-base focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-navy ${selected ? 'border-brand-navy bg-brand-navy text-brand-cream' : 'border-brand-navy/25 bg-brand-cream text-brand-navy hover:border-brand-navy'}`}
     >
       {children}
     </button>
@@ -42,11 +44,11 @@ export default function Onboarding() {
   }
 
   return (
-    <div className="flex min-h-full items-center justify-center p-6">
-      <form onSubmit={handleSubmit} className="w-full max-w-md space-y-6 rounded-2xl bg-white p-8 shadow">
+    <div className="flex min-h-full items-center justify-center bg-brand-cream p-4 text-brand-navy sm:p-6">
+      <form onSubmit={handleSubmit} className="w-full max-w-md space-y-6 rounded-2xl border border-brand-navy/15 bg-brand-cream p-6 shadow-sm shadow-brand-navy/10 sm:p-8">
         <div>
-          <h1 className="text-3xl font-black">RALL-E</h1>
-          <p className="text-slate-500">Find people to play with, wherever you are.</p>
+          <h1 className="mb-3"><BrandWordmark /></h1>
+          <p className="text-brand-navy/75">Find people to play with, wherever you are.</p>
         </div>
 
         <label className="block space-y-1">
@@ -55,7 +57,7 @@ export default function Onboarding() {
             required
             value={name}
             onChange={(e) => setName(e.target.value)}
-            className="w-full rounded-lg border border-slate-300 px-3 py-2"
+            className="w-full rounded-lg border border-brand-navy/25 bg-brand-cream px-3 py-2 placeholder:text-brand-navy/60 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-navy"
             placeholder="Mai"
           />
         </label>
@@ -82,11 +84,11 @@ export default function Onboarding() {
           </div>
         </div>
 
-        {error && <p className="text-sm text-red-600">{error}</p>}
+        {error && <p role="alert" className="rounded-lg border-l-4 border-brand-orange bg-brand-orange/10 p-3 text-sm text-brand-navy">{error}</p>}
 
         <button
           disabled={saving}
-          className="w-full rounded-xl bg-emerald-600 py-3 font-semibold text-white hover:bg-emerald-700 disabled:opacity-50"
+          className="w-full rounded-xl bg-brand-lime py-3 font-semibold text-brand-navy transition-colors hover:bg-brand-lime/80 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-navy disabled:opacity-50"
         >
           {saving ? 'Saving…' : 'Find sessions'}
         </button>

@@ -29,26 +29,26 @@ function isSameMessageBurst(first, second) {
 
 function SessionRow({ session, onOpen, onAction, actionLabel }) {
   return (
-    <div className="flex items-center gap-1 rounded-xl pr-1 hover:bg-slate-50">
+    <div className="flex items-center gap-1 rounded-xl pr-1 hover:bg-brand-cream/70">
       <button
         type="button"
         onClick={onOpen}
-        className="flex min-w-0 flex-1 items-center gap-3 rounded-xl p-3 text-left focus-visible:outline-2 focus-visible:outline-emerald-700"
+        className="flex min-w-0 flex-1 items-center gap-3 rounded-xl p-3 text-left focus-visible:outline-2 focus-visible:outline-brand-navy"
       >
-        <span className="grid h-10 w-10 shrink-0 place-items-center rounded-full bg-emerald-100 text-lg">{SPORT_EMOJI[session.sport]}</span>
+        <span className="grid h-10 w-10 shrink-0 place-items-center rounded-full bg-brand-lime/35 text-lg">{SPORT_EMOJI[session.sport]}</span>
         <span className="min-w-0 flex-1">
-          <span className="block truncate text-sm font-semibold text-slate-900">{session.court?.name ?? 'Sports session'}</span>
+          <span className="block truncate text-sm font-semibold text-brand-navy">{session.court?.name ?? 'Sports session'}</span>
           <span className="block truncate text-xs font-medium text-[#1A265A]">{formatSessionStart(session.start_time)}</span>
-          <span className="block truncate text-xs text-slate-500">{session.participant_count} {session.participant_count === 1 ? 'player' : 'players'} · {session.host?.name ?? 'Session chat'}</span>
+          <span className="block truncate text-xs text-brand-navy/75">{session.participant_count} {session.participant_count === 1 ? 'player' : 'players'} · {session.host?.name ?? 'Session chat'}</span>
         </span>
-        <span aria-hidden="true" className="text-slate-400">›</span>
+        <span aria-hidden="true" className="text-brand-navy/45">›</span>
       </button>
       <button
         type="button"
         onClick={onAction}
         aria-label={`${actionLabel} ${session.court?.name ?? 'session chat'}`}
         title={actionLabel}
-        className="grid h-8 w-8 shrink-0 place-items-center rounded-full text-lg text-slate-400 hover:bg-white hover:text-slate-800 focus-visible:outline-2 focus-visible:outline-emerald-700"
+        className="grid h-8 w-8 shrink-0 place-items-center rounded-full text-lg text-brand-navy/45 hover:bg-brand-cream hover:text-brand-navy focus-visible:outline-2 focus-visible:outline-brand-navy"
       >
         {actionLabel === 'Archive' ? '×' : '↶'}
       </button>
@@ -145,21 +145,21 @@ export default function SessionChatLauncher() {
   return (
     <div className="fixed bottom-4 right-4 z-[1200] flex flex-col items-end gap-3">
       {open && (
-        <section className={`flex ${expanded ? 'h-[min(42rem,calc(100dvh-6rem))] w-[min(32rem,calc(100vw-2rem))]' : 'h-[min(32rem,calc(100dvh-6rem))] w-[min(22rem,calc(100vw-2rem))]'} flex-col overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-2xl transition-[width,height] duration-200`} aria-label="Session chats">
-          <header className="flex items-center gap-2 border-b border-slate-200 bg-white px-3 py-3">
+        <section className={`flex ${expanded ? 'h-[min(42rem,calc(100dvh-6rem))] w-[min(32rem,calc(100vw-2rem))]' : 'h-[min(32rem,calc(100dvh-6rem))] w-[min(22rem,calc(100vw-2rem))]'} flex-col overflow-hidden rounded-2xl border border-brand-navy/20 bg-brand-cream shadow-2xl transition-[width,height] duration-200`} aria-label="Session chats">
+          <header className="flex items-center gap-2 border-b border-brand-navy/20 bg-brand-cream px-3 py-3">
             {selectedSession && (
               <button
                 type="button"
                 onClick={() => { setSelectedSession(null); setMessages([]); setError('') }}
                 aria-label="Back to session chats"
-                className="rounded-lg px-2 py-1 text-lg leading-none text-slate-600 hover:bg-slate-100"
+                className="rounded-lg px-2 py-1 text-lg leading-none text-brand-navy/75 hover:bg-brand-navy/5"
               >
                 ←
               </button>
             )}
             <div className="min-w-0 flex-1">
-              <h2 className="truncate font-bold text-slate-900">{selectedSession?.court?.name ?? 'Session chats'}</h2>
-              <p className="text-xs text-slate-500">{selectedSession ? 'Chat with your session' : `${activeSessions.length} open ${activeSessions.length === 1 ? 'chat' : 'chats'}`}</p>
+              <h2 className="truncate font-bold text-brand-navy">{selectedSession?.court?.name ?? 'Session chats'}</h2>
+              <p className="text-xs text-brand-navy/75">{selectedSession ? 'Chat with your session' : `${activeSessions.length} open ${activeSessions.length === 1 ? 'chat' : 'chats'}`}</p>
             </div>
             <button
               type="button"
@@ -167,11 +167,11 @@ export default function SessionChatLauncher() {
               aria-label={expanded ? 'Shrink chats panel' : 'Expand chats panel'}
               aria-pressed={expanded}
               title={expanded ? 'Shrink chats panel' : 'Expand chats panel'}
-              className="rounded-lg px-2 py-1 text-base leading-none text-slate-500 hover:bg-slate-100"
+              className="rounded-lg px-2 py-1 text-base leading-none text-brand-navy/75 hover:bg-brand-navy/5"
             >
               {expanded ? '↙' : '↗'}
             </button>
-            <button type="button" onClick={() => setOpen(false)} aria-label="Close chats" className="rounded-lg px-2 py-1 text-xl leading-none text-slate-500 hover:bg-slate-100">×</button>
+            <button type="button" onClick={() => setOpen(false)} aria-label="Close chats" className="rounded-lg px-2 py-1 text-xl leading-none text-brand-navy/75 hover:bg-brand-navy/5">×</button>
           </header>
 
           {error && <p role="alert" className="border-b border-red-100 bg-red-50 px-3 py-2 text-xs text-red-700">{error}</p>}
@@ -179,7 +179,7 @@ export default function SessionChatLauncher() {
           {!selectedSession ? (
             <div className="flex-1 space-y-1 overflow-y-auto p-2">
               {activeSessions.length === 0 ? (
-                <p className="p-4 text-center text-sm text-slate-500">{archivedSessions.length > 0 ? 'No open chats. Your archived chats are below.' : 'Join or host a session to start chatting.'}</p>
+                <p className="p-4 text-center text-sm text-brand-navy/75">{archivedSessions.length > 0 ? 'No open chats. Your archived chats are below.' : 'Join or host a session to start chatting.'}</p>
               ) : activeSessions.map((session) => (
                 <SessionRow
                   key={session.id}
@@ -190,8 +190,8 @@ export default function SessionChatLauncher() {
                 />
               ))}
               {archivedSessions.length > 0 && (
-                <details className="mt-3 border-t border-slate-200 pt-2">
-                  <summary className="cursor-pointer px-2 py-2 text-xs font-semibold text-slate-500 hover:text-slate-800">Archived chats ({archivedSessions.length})</summary>
+                <details className="mt-3 border-t border-brand-navy/20 pt-2">
+                  <summary className="cursor-pointer px-2 py-2 text-xs font-semibold text-brand-navy/75 hover:text-brand-navy">Archived chats ({archivedSessions.length})</summary>
                   <div className="space-y-1 pt-1">
                     {archivedSessions.map((session) => (
                       <SessionRow
@@ -208,8 +208,8 @@ export default function SessionChatLauncher() {
             </div>
           ) : (
             <>
-              <div className="flex-1 space-y-2 overflow-y-auto bg-slate-50 p-3">
-                {messages.length === 0 && <p className="py-6 text-center text-sm text-slate-500">No messages yet. Say hi!</p>}
+              <div className="flex-1 space-y-2 overflow-y-auto bg-brand-cream/70 p-3">
+                {messages.length === 0 && <p className="py-6 text-center text-sm text-brand-navy/75">No messages yet. Say hi!</p>}
                 {messages.map((message, index) => {
                   const mine = message.user_id === user.id
                   const groupedWithPrevious = isSameMessageBurst(messages[index - 1], message)
@@ -219,18 +219,18 @@ export default function SessionChatLauncher() {
                   return (
                     <div key={message.id} style={{ marginTop: groupedWithPrevious ? 2 : undefined }} className={`flex ${mine ? 'justify-end' : 'justify-start'}`}>
                       <div className="max-w-[85%]">
-                        <div className={`rounded-2xl px-3 py-2 text-sm ${mine ? `${groupedWithNext ? 'rounded-br-xl' : 'rounded-br-sm'} bg-slate-900 text-white` : `${groupedWithNext ? 'rounded-bl-xl' : 'rounded-bl-sm'} bg-white text-slate-900 shadow-sm`}`}>
+                        <div className={`rounded-2xl px-3 py-2 text-sm ${mine ? `${groupedWithNext ? 'rounded-br-xl' : 'rounded-br-sm'} bg-brand-navy text-brand-cream` : `${groupedWithNext ? 'rounded-bl-xl' : 'rounded-bl-sm'} bg-brand-cream text-brand-navy shadow-sm`}`}>
                           {!mine && !groupedWithPrevious && (
                             <p className="mb-0.5 text-xs font-semibold">
                               {message.user_id
-                                ? <Link to={`/profile/${message.user_id}`} title={profilePreview(message.user)} className="text-slate-500 hover:text-emerald-700 hover:underline focus-visible:underline">{message.user?.name ?? 'Player'}</Link>
-                                : <span className="text-slate-500">{message.user?.name ?? 'Player'}</span>}
+                                ? <Link to={`/profile/${message.user_id}`} title={profilePreview(message.user)} className="text-brand-navy/75 hover:text-brand-navy hover:underline focus-visible:underline">{message.user?.name ?? 'Player'}</Link>
+                                : <span className="text-brand-navy/75">{message.user?.name ?? 'Player'}</span>}
                             </p>
                           )}
                           <p className="whitespace-pre-wrap break-words">{message.text}</p>
                         </div>
                         {!groupedWithNext && (
-                          <time dateTime={message.created_at} title={sentAt.toLocaleString()} className={`mt-1 block text-[10px] text-slate-500 ${mine ? 'text-right' : 'text-left'}`}>
+                          <time dateTime={message.created_at} title={sentAt.toLocaleString()} className={`mt-1 block text-[10px] text-brand-navy/75 ${mine ? 'text-right' : 'text-left'}`}>
                             {timeLabel}
                           </time>
                         )}
@@ -240,16 +240,16 @@ export default function SessionChatLauncher() {
                 })}
                 <div ref={messagesEndRef} />
               </div>
-              <form onSubmit={handleSend} className="flex gap-2 border-t border-slate-200 p-3">
+              <form onSubmit={handleSend} className="flex gap-2 border-t border-brand-navy/20 p-3">
                 <input
                   value={text}
                   onChange={(event) => setText(event.target.value)}
                   maxLength={1000}
                   placeholder="Write a message…"
                   aria-label="Message"
-                  className="min-w-0 flex-1 rounded-full border border-slate-300 px-4 py-2 text-sm outline-none focus:border-slate-500"
+                  className="min-w-0 flex-1 rounded-full border border-brand-navy/25 px-4 py-2 text-sm outline-none focus:border-brand-navy"
                 />
-                <button type="submit" disabled={!text.trim() || sending} className="rounded-full bg-slate-900 px-4 py-2 text-sm font-semibold text-white hover:bg-slate-700 disabled:cursor-not-allowed disabled:opacity-50">
+                <button type="submit" disabled={!text.trim() || sending} className="rounded-full bg-brand-navy px-4 py-2 text-sm font-semibold text-brand-cream hover:bg-brand-navy/90 disabled:cursor-not-allowed disabled:opacity-50">
                   {sending ? '…' : 'Send'}
                 </button>
               </form>
@@ -263,9 +263,9 @@ export default function SessionChatLauncher() {
         onClick={() => setOpen((value) => !value)}
         aria-expanded={open}
         aria-label={open ? 'Close session chats' : 'Open session chats'}
-        className="inline-flex items-center gap-2 rounded-full bg-slate-900 px-5 py-3 font-semibold text-white shadow-xl transition hover:bg-slate-700 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-emerald-700"
+        className="inline-flex items-center gap-2 rounded-full bg-brand-navy px-5 py-3 font-semibold text-brand-cream shadow-xl transition hover:bg-brand-navy/90 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-navy"
       >
-        <span aria-hidden="true">▰</span> Chats {activeSessions.length > 0 && <span className="rounded-full bg-white/20 px-2 py-0.5 text-xs">{activeSessions.length}</span>}
+        <span aria-hidden="true">▰</span> Chats {activeSessions.length > 0 && <span className="rounded-full bg-brand-cream/20 px-2 py-0.5 text-xs">{activeSessions.length}</span>}
       </button>
     </div>
   )

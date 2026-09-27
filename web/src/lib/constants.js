@@ -28,7 +28,7 @@ export const LEVELS = ['beginner', 'intermediate', 'advanced']
 
 export const SPORT_COLORS = {
   tennis: '#97FB57',
-  badminton: '#50A5B1',
+  badminton: '#FD6326',
 }
 
 export const SPORT_EMOJI = {

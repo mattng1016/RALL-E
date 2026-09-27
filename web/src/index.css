@@ -1,5 +1,12 @@
 @import "tailwindcss";
 
+@theme {
+  --color-brand-navy: #1A265A;
+  --color-brand-lime: #97FB57;
+  --color-brand-orange: #FD6326;
+  --color-brand-cream: #FEF6ED;
+}
+
 html,
 body,
 #root {
@@ -7,15 +14,14 @@ body,
 }
 
 body {
-  @apply bg-slate-50 text-slate-900 antialiased;
+  @apply bg-brand-cream text-brand-navy antialiased;
 }
 
 :root {
-  --drawy-navy: #1a265a;
-  --drawy-lime: #97fb57;
-  --drawy-orange: #fd6326;
-  --drawy-teal: #50a5b1;
-  --drawy-cream: #fef6ed;
+  --drawy-navy: var(--color-brand-navy);
+  --drawy-lime: var(--color-brand-lime);
+  --drawy-orange: var(--color-brand-orange);
+  --drawy-cream: var(--color-brand-cream);
 }
 
 .drawy-map .leaflet-top.leaflet-left {
@@ -41,7 +47,7 @@ body {
   width: 46px;
   height: 46px;
   place-items: center;
-  border: 3px solid var(--drawy-teal);
+  border: 3px solid var(--drawy-orange);
   border-radius: 50%;
   background: var(--drawy-navy);
   box-shadow: 0 4px 14px rgb(26 38 90 / 32%);
@@ -188,8 +194,8 @@ body {
 .drawy-activity-cost strong {
   padding: 5px 12px;
   border-radius: 999px;
-  background: var(--drawy-teal);
-  color: white;
+  background: var(--drawy-orange);
+  color: var(--drawy-navy);
   font-size: 14px;
 }
 
@@ -198,7 +204,7 @@ body {
   padding: 12px;
   border-radius: 10px;
   background: var(--drawy-orange);
-  color: white;
+  color: var(--drawy-navy);
   font-size: 14px;
   font-weight: 800;
   text-align: center;
@@ -209,4 +215,59 @@ body {
 
 .drawy-activity-join:hover {
   filter: brightness(0.94);
+}
+
+/* Sport icons reuse SPORT_EMOJI from the session list. */
+.sport-map-marker { background: transparent; border: 0; }
+.sport-map-marker span { display: grid; place-items: center; width: 44px; height: 44px; border: 2px solid var(--color-brand-navy); border-radius: 50%; background: var(--color-brand-lime); font-size: 24px; box-shadow: 0 3px 12px rgb(26 38 90 / 25%); transition: background 150ms, transform 150ms; }
+.sport-map-marker.is-active span { background: var(--color-brand-orange); transform: scale(1.12); }
+.sport-map-marker:focus-visible { outline: 3px solid var(--color-brand-navy); outline-offset: 4px; border-radius: 50%; }
+.drawy-map .leaflet-bar a { background: var(--color-brand-cream); color: var(--color-brand-navy); border-color: rgb(26 38 90 / 20%); }
+.drawy-map .leaflet-bar a:hover { background: var(--color-brand-lime); }
+.drawy-map .leaflet-control-attribution { background: var(--color-brand-cream); color: var(--color-brand-navy); }
+.drawy-map .leaflet-control-attribution a { color: var(--color-brand-navy); }
+@layer base {
+  input, select, textarea { background-color: var(--color-brand-cream); color: var(--color-brand-navy); accent-color: var(--color-brand-navy); }
+  button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible, textarea:focus-visible { outline: 2px solid var(--color-brand-navy); outline-offset: 3px; }
+}
+
+/* Official outlined wordmark and racket symbol; keep the native aspect ratio. */
+.brand-logo {
+  display: block;
+  width: 160px;
+  height: auto;
+  flex-shrink: 0;
+}
+
+.brand-home {
+  display: inline-flex;
+  flex-shrink: 0;
+  align-items: center;
+  border-radius: 4px;
+}
+
+.brand-home:focus-visible {
+  outline: 2px solid #1a265a;
+  outline-offset: 5px;
+}
+/* Official asymmetric wordmark for light-background brand placements. */
+.brand-wordmark {
+  display: block;
+  width: 168px;
+  height: auto;
+  flex-shrink: 0;
+}
+
+.brand-lockup {
+  display: inline-flex;
+  flex-shrink: 0;
+  align-items: center;
+  gap: 10px;
+}
+
+.brand-symbol {
+  display: block;
+  width: 46px;
+  height: 36px;
+  flex-shrink: 0;
 }

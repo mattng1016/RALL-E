@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useState } from 'react'
-import { useParams } from 'react-router-dom'
+import { Link, useParams } from 'react-router-dom'
 import {
   getCurrentUser,
   getMessages,
@@ -10,7 +10,7 @@ import {
   subscribeToChanges,
 } from '../lib/api'
 import { SPORT_EMOJI } from '../lib/constants'
-import { capitalize, formatDateTime, formatPrice } from '../lib/format'
+import { capitalize, formatDateTime, formatPrice, profilePreview } from '../lib/format'
 
 function Chat({ sessionId, user }) {
   const [messages, setMessages] = useState([])
@@ -135,13 +135,22 @@ export default function SessionDetail() {
             </div>
             <div>
               <dt className="text-slate-500">Host</dt>
-              <dd className="font-medium">{session.host?.name}</dd>
+              <dd className="font-medium">
+                {session.host?.id ? <Link to={`/profile/${session.host.id}`} title={profilePreview(session.host)} className="text-emerald-700 hover:underline">{session.host.name}</Link> : session.host?.name}
+              </dd>
             </div>
           </dl>
 
           <div>
             <p className="mb-1 text-sm text-slate-500">Going</p>
-            <p className="text-sm">{session.participants.map((p) => p.name).join(', ')}</p>
+            <p className="flex flex-wrap gap-x-2 text-sm">
+              {session.participants.map((participant, index) => (
+                <span key={participant.id}>
+                  {index > 0 && <span aria-hidden="true">, </span>}
+                  <Link to={`/profile/${participant.id}`} title={profilePreview(participant)} className="text-emerald-700 hover:underline">{participant.name}</Link>
+                </span>
+              ))}
+            </p>
           </div>
 
           {error && <p className="text-sm text-red-600">{error}</p>}

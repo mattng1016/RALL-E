@@ -38,7 +38,7 @@ export default function Layout() {
           <NavLink to="/create" className={navClass}>
             + Create session
           </NavLink>
-          <Link to="/onboarding" className="ml-2 text-sm text-slate-500 hover:underline">
+          <Link to="/profile" className="ml-2 text-sm text-slate-500 hover:underline">
             {user?.name}
           </Link>
           {authEnabled && (

@@ -8,6 +8,7 @@ import CreateSession from './pages/CreateSession'
 import Discover from './pages/Discover'
 import MySessions from './pages/MySessions'
 import Onboarding from './pages/Onboarding'
+import Profile from './pages/Profile'
 import SessionDetail from './pages/SessionDetail'
 
 function Loader() {
@@ -55,6 +56,8 @@ export default function App() {
               <Route path="/sessions/:id" element={<SessionDetail />} />
               <Route path="/create" element={<CreateSession />} />
               <Route path="/my-sessions" element={<MySessions />} />
+              <Route path="/profile" element={<Profile />} />
+              <Route path="/profile/:id" element={<Profile />} />
             </Route>
           </Route>
           <Route path="*" element={<Navigate to="/" replace />} />

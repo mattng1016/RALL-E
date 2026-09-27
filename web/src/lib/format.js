@@ -27,3 +27,20 @@ export function formatDistance(from, to) {
   const meters = 6_371_000 * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a))
   return meters < 1000 ? `${Math.round(meters / 10) * 10} m away` : `${(meters / 1000).toFixed(1)} km away`
 }
+
+export function profilePreview(profile) {
+  if (!profile) return ''
+  const sportsSummary = profile.sports?.length
+    ? profile.sports.slice(0, 3).map((item) => `${capitalize(item.sport)} (${item.skill_level})`).join(', ')
+    : [profile.sport && capitalize(profile.sport), profile.level && capitalize(profile.level)].filter(Boolean).join(' · ')
+  const details = [
+    profile.sex,
+    profile.age && `Age ${profile.age}`,
+    profile.is_coach === true && 'Coach',
+    sportsSummary,
+    profile.bio?.trim(),
+  ]
+    .filter(Boolean)
+    .join(' · ')
+  return (details ? `${profile.name} — ${details}` : profile.name ?? '').slice(0, 240)
+}

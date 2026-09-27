@@ -32,7 +32,7 @@ export default function Onboarding() {
     setSaving(true)
     setError(null)
     try {
-      await saveUser({ id: authUser?.id, name: name.trim(), sport, level })
+      await saveUser({ id: authUser?.id, name: name.trim(), sport, level, bio: existing?.bio ?? '' })
       if (authUser) await refreshProfile()
       navigate('/')
     } catch (err) {

@@ -69,56 +69,6 @@ export const sessions = [
     start_time: hoursFromNow(68), duration_min: 60, capacity: 4, price: 30, is_coach: true,
     description: 'Drills + match play with a certified coach.',
   },
-  {
-    id: 's9', host_id: 'u1', court_id: 'c9', sport: 'badminton', level: 'beginner',
-    start_time: hoursFromNow(4), duration_min: 90, capacity: 6, price: 5, is_coach: false,
-    description: 'Friendly doubles and a relaxed pace. Rackets available.',
-  },
-  {
-    id: 's10', host_id: 'u3', court_id: 'c10', sport: 'badminton', level: 'intermediate',
-    start_time: hoursFromNow(8), duration_min: 90, capacity: 4, price: 6, is_coach: false,
-    description: 'Evening games, all welcome.',
-  },
-  {
-    id: 's11', host_id: 'u5', court_id: 'c11', sport: 'badminton', level: 'beginner',
-    start_time: hoursFromNow(12), duration_min: 60, capacity: 4, price: 7, is_coach: false,
-    description: 'First-timers welcome. We can show you the basics.',
-  },
-  {
-    id: 's12', host_id: 'u2', court_id: 'c12', sport: 'badminton', level: 'intermediate',
-    start_time: hoursFromNow(16), duration_min: 90, capacity: 6, price: 6, is_coach: false,
-    description: 'Rotating doubles near Main Street.',
-  },
-  {
-    id: 's13', host_id: 'u1', court_id: 'c13', sport: 'badminton', level: 'beginner',
-    start_time: hoursFromNow(22), duration_min: 60, capacity: 4, price: 5, is_coach: false,
-    description: 'Easygoing game, bring indoor shoes.',
-  },
-  {
-    id: 's14', host_id: 'u2', court_id: 'c14', sport: 'tennis', level: 'intermediate',
-    start_time: hoursFromNow(24), duration_min: 60, capacity: 2, price: 0, is_coach: false,
-    description: 'Casual rally at the courts by the beach.',
-  },
-  {
-    id: 's15', host_id: 'u4', court_id: 'c15', sport: 'tennis', level: 'beginner',
-    start_time: hoursFromNow(30), duration_min: 60, capacity: 5, price: 22, is_coach: true,
-    description: 'Small group lesson covering the fundamentals.',
-  },
-  {
-    id: 's16', host_id: 'u3', court_id: 'c16', sport: 'tennis', level: 'advanced',
-    start_time: hoursFromNow(36), duration_min: 90, capacity: 4, price: 10, is_coach: false,
-    description: 'Fast doubles session. Bring your own balls.',
-  },
-  {
-    id: 's17', host_id: 'u5', court_id: 'c17', sport: 'badminton', level: 'intermediate',
-    start_time: hoursFromNow(40), duration_min: 90, capacity: 6, price: 7, is_coach: false,
-    description: 'Weekend doubles. Shuttles provided.',
-  },
-  {
-    id: 's18', host_id: 'u1', court_id: 'c18', sport: 'badminton', level: 'beginner',
-    start_time: hoursFromNow(48), duration_min: 60, capacity: 4, price: 6, is_coach: false,
-    description: 'Meet new people and learn as you play.',
-  },
 ]
 
 export const sessionParticipants = [
@@ -135,21 +85,6 @@ export const sessionParticipants = [
   { session_id: 's6', user_id: 'u2' },
   { session_id: 's7', user_id: 'u3' },
   { session_id: 's8', user_id: 'u4' },
-  { session_id: 's9', user_id: 'u1' },
-  { session_id: 's9', user_id: 'u3' },
-  { session_id: 's10', user_id: 'u3' },
-  { session_id: 's10', user_id: 'u5' },
-  { session_id: 's11', user_id: 'u5' },
-  { session_id: 's12', user_id: 'u2' },
-  { session_id: 's12', user_id: 'u3' },
-  { session_id: 's13', user_id: 'u1' },
-  { session_id: 's14', user_id: 'u2' },
-  { session_id: 's15', user_id: 'u4' },
-  { session_id: 's15', user_id: 'u1' },
-  { session_id: 's16', user_id: 'u3' },
-  { session_id: 's17', user_id: 'u5' },
-  { session_id: 's17', user_id: 'u2' },
-  { session_id: 's18', user_id: 'u1' },
 ]
 
 export const messages = [

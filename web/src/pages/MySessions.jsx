@@ -1,9 +1,10 @@
 import { useCallback, useEffect, useState } from 'react'
-import { Link } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 import SessionCard from '../components/SessionCard'
 import { getCurrentUser, getMySessions, subscribeToChanges } from '../lib/api'
 
 export default function MySessions() {
+  const navigate = useNavigate()
   const user = getCurrentUser()
   const [sessions, setSessions] = useState(null)
   const [error, setError] = useState(null)
@@ -51,7 +52,12 @@ export default function MySessions() {
         ) : (
           <div className="space-y-3">
             {upcoming.map((session) => (
-              <SessionCard key={session.id} session={session} tag={tagFor(session)} />
+              <SessionCard
+                key={session.id}
+                session={session}
+                tag={tagFor(session)}
+                onClick={() => navigate(`/sessions/${session.id}`)}
+              />
             ))}
           </div>
         )}
@@ -63,7 +69,12 @@ export default function MySessions() {
             </summary>
             <div className="mt-3 space-y-3 opacity-75">
               {past.map((session) => (
-                <SessionCard key={session.id} session={session} tag={tagFor(session)} />
+                <SessionCard
+                  key={session.id}
+                  session={session}
+                  tag={tagFor(session)}
+                  onClick={() => navigate(`/sessions/${session.id}`)}
+                />
               ))}
             </div>
           </details>

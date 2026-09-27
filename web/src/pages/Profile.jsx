@@ -155,9 +155,11 @@ export default function Profile() {
             <h1 className="mt-1 text-2xl font-bold text-slate-900">{isOwnProfile ? 'My profile' : `${displayedProfile.name}'s profile`}</h1>
           </div>
           {isOwnProfile && !editing && (
-            <button type="button" onClick={startEditing} className="rounded-xl border border-slate-300 px-4 py-2 text-sm font-semibold text-slate-700 hover:bg-slate-50">
-              Edit profile
-            </button>
+            <div className="flex flex-wrap justify-end gap-2">
+              <button type="button" onClick={startEditing} className="rounded-xl border border-slate-300 px-4 py-2 text-sm font-semibold text-slate-700 hover:bg-slate-50">
+                Edit profile
+              </button>
+            </div>
           )}
         </div>
 
@@ -338,6 +340,7 @@ export default function Profile() {
           </form>
         ) : (
           <div className="space-y-6 p-5 sm:p-7">
+            {error && <p role="alert" className="rounded-lg bg-red-50 px-3 py-2 text-sm text-red-700">{error}</p>}
             <div className="flex items-start gap-4 sm:gap-5">
               <div className="grid h-16 w-16 shrink-0 place-items-center rounded-2xl bg-[#1A265A] text-xl font-bold text-[#97FB57] sm:h-20 sm:w-20 sm:text-2xl" aria-hidden="true">
                 {initials(displayedProfile.name)}

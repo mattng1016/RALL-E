@@ -10,6 +10,7 @@ import MySessions from './pages/MySessions'
 import Onboarding from './pages/Onboarding'
 import Profile from './pages/Profile'
 import SessionDetail from './pages/SessionDetail'
+import Settings from './pages/Settings'
 
 function Loader() {
   return <div className="page-loader" aria-label="Loading RALL-E" />
@@ -58,6 +59,7 @@ export default function App() {
               <Route path="/my-sessions" element={<MySessions />} />
               <Route path="/profile" element={<Profile />} />
               <Route path="/profile/:id" element={<Profile />} />
+              <Route path="/settings" element={<Settings />} />
             </Route>
           </Route>
           <Route path="*" element={<Navigate to="/" replace />} />

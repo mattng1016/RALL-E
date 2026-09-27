@@ -16,8 +16,19 @@ Open http://localhost:5173. Without a `.env` file the app runs on mock data (`we
 
 1. Create a project at [supabase.com](https://supabase.com).
 2. In the SQL editor, run `supabase/schema.sql`, then `supabase/seed.sql`.
-3. Copy `web/.env.example` to the repository root as `.env` and fill in the URL and publishable key from Project Settings → API.
+3. Copy `web/.env.example` to `web/.env` and fill in the URL and publishable key from Project Settings → API.
 4. Restart `npm run dev`. The yellow "Using mock data" banner disappears.
+
+## Accounts (Supabase Auth)
+
+With Supabase connected, players sign up with email and password (`/signup`, `/login`), then pick their sport and level on `/onboarding`. The account's id is used as their row id in the `users` table. Passwords are handled by Supabase Auth and never stored in our tables.
+
+In the Supabase dashboard:
+
+- **Authentication → Sign In / Providers → Email**: turn off **Confirm email** for the hackathon. The built-in email sender only allows a few emails per hour, so sign-ups quickly fail with a rate-limit error otherwise.
+- **Authentication → URL Configuration**: set **Site URL** to `http://localhost:5173` (and add the deployed URL later), so confirmation links open the app.
+
+Without Supabase (mock mode) there is no login: onboarding alone creates a local player.
 
 ## Project structure
 

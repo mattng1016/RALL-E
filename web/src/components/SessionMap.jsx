@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from 'react'
 import { divIcon } from 'leaflet'
 import { Circle, CircleMarker, MapContainer, Marker, Popup, TileLayer, useMap } from 'react-leaflet'
 import { Link } from 'react-router-dom'
-import { MAP_CENTER, MAP_ZOOM, SPORT_COLORS } from '../lib/constants'
+import { MAP_CENTER, MAP_ZOOM, SPORT_EMOJI } from '../lib/constants'
 import { capitalize, formatDateTime, formatPrice, formatDistance } from '../lib/format'
 
 function sessionBadge(startTime) {
@@ -19,7 +19,7 @@ function ActivityCard({ session, userLocation, onMouseEnter, onMouseLeave }) {
   return (
     <article className="drawy-activity-card" onMouseEnter={onMouseEnter} onMouseLeave={onMouseLeave}>
       <span className="drawy-activity-badge">{sessionBadge(session.start_time)}</span>
-      <h2>{session.is_coach ? `${capitalize(session.sport)} lesson` : `${capitalize(session.sport)} pickup`}</h2>
+      <h2>{SPORT_EMOJI[session.sport]} {session.is_coach ? `${capitalize(session.sport)} lesson` : `${capitalize(session.sport)} pickup`}</h2>
       <p className="drawy-activity-location">
         {session.court.name} <span aria-hidden="true">·</span> {formatDateTime(session.start_time)}
         {distance && <> <span aria-hidden="true">·</span> {distance}</>}
@@ -236,14 +236,21 @@ function SessionMarkers({ sessions, selectedSessionId, focusRequest, listOpen, u
     const isSelected = selectedSessionId === session.id
     const isHovered = hoveredSessionId === session.id
     return (
-      <CircleMarker
+      <Marker
         key={session.id}
-        center={[session.court.lat, session.court.lng]}
+        position={[session.court.lat, session.court.lng]}
+        title={`${capitalize(session.sport)} at ${session.court.name}`}
+        alt={`${capitalize(session.sport)} session`}
+        icon={divIcon({
+          className: `sport-map-marker${isSelected || isHovered ? ' is-active' : ''}`,
+          html: `<span>${SPORT_EMOJI[session.sport] ?? '●'}</span>`,
+          iconSize: [44, 44],
+          iconAnchor: [22, 22],
+        })}
         ref={(marker) => {
           if (marker) markerRefs.current[session.id] = marker
           else delete markerRefs.current[session.id]
         }}
-        radius={isSelected || isHovered ? 15 : 12}
         eventHandlers={{
           click: () => {
             clearTimers()
@@ -264,12 +271,6 @@ function SessionMarkers({ sessions, selectedSessionId, focusRequest, listOpen, u
             setHoveredSessionId(null)
             if (selectionMode.current === 'hover') closeAfterHover(session.id)
           },
-        }}
-        pathOptions={{
-          color: isSelected || isHovered ? '#FD6326' : '#1A265A',
-          weight: isSelected || isHovered ? 3 : 2,
-          fillColor: SPORT_COLORS[session.sport],
-          fillOpacity: 1,
         }}
       >
         <Popup
@@ -292,7 +293,7 @@ function SessionMarkers({ sessions, selectedSessionId, focusRequest, listOpen, u
             }}
           />
         </Popup>
-      </CircleMarker>
+      </Marker>
     )
   })
 }
@@ -318,7 +319,7 @@ export default function SessionMap({ sessions, selectedSessionId, focusRequest, 
           <Circle
             center={[userLocation.lat, userLocation.lng]}
             radius={userLocation.accuracy}
-            pathOptions={{ color: '#50A5B1', fillColor: '#50A5B1', fillOpacity: 0.12, weight: 1 }}
+            pathOptions={{ color: '#1A265A', fillColor: '#97FB57', fillOpacity: 0.12, weight: 1 }}
           />
           <CircleMarker
             center={[userLocation.lat, userLocation.lng]}

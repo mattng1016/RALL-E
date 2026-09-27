@@ -14,7 +14,15 @@ export const usingMockData = !supabase
 
 export function getCurrentUser() {
   const raw = localStorage.getItem(USER_KEY)
-  return raw ? JSON.parse(raw) : null
+  const user = raw ? JSON.parse(raw) : null
+  // Mock tables reset on reload, but the onboarding profile survives in storage.
+  // Restore it so joins, hosted sessions, and messages can resolve the player.
+  if (!supabase && user) {
+    const index = mock.users.findIndex((entry) => entry.id === user.id)
+    if (index === -1) mock.users.push(user)
+    else mock.users[index] = user
+  }
+  return user
 }
 
 export function clearCurrentUser() {

@@ -2,7 +2,7 @@ import { useCallback, useEffect, useState } from 'react'
 import SessionCard from '../components/SessionCard'
 import SessionMap from '../components/SessionMap'
 import { getCurrentUser, getSessions, subscribeToChanges } from '../lib/api'
-import { LEVELS, SPORTS } from '../lib/constants'
+import { LEVELS, SPORT_EMOJI, SPORTS } from '../lib/constants'
 import { capitalize } from '../lib/format'
 
 export default function Discover() {
@@ -66,12 +66,12 @@ export default function Discover() {
           aria-expanded={false}
           aria-controls="session-list-panel"
           onClick={() => setListOpen(true)}
-          className="absolute left-3 top-3 z-[1000] inline-flex items-center justify-center gap-3 rounded-xl border border-slate-200 bg-white px-5 py-3 text-base font-semibold leading-none text-slate-900 shadow-lg transition hover:border-slate-300 hover:bg-slate-50 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-emerald-700"
+          className="absolute left-3 top-3 z-[1000] inline-flex items-center justify-center gap-3 rounded-xl border border-brand-navy/20 bg-brand-cream px-5 py-3 text-base font-semibold leading-none text-brand-navy shadow-lg transition hover:border-brand-navy/20 hover:bg-brand-cream focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-navy"
         >
           <span aria-hidden="true">☰</span>
           Find a game
           {sessions.length > 0 && (
-            <span className="rounded-full bg-emerald-100 px-2.5 py-1 text-sm text-emerald-800">{sessions.length}</span>
+            <span className="rounded-full bg-brand-lime px-2.5 py-1 text-sm text-brand-navy">{sessions.length}</span>
           )}
         </button>
       )}
@@ -81,13 +81,13 @@ export default function Discover() {
           type="button"
           onClick={requestLocation}
           disabled={locationStatus === 'loading'}
-          className="rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm font-semibold text-slate-900 shadow-lg transition hover:bg-slate-50 disabled:cursor-wait disabled:opacity-70 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-emerald-700"
+          className="rounded-xl border border-brand-navy/20 bg-brand-cream px-4 py-3 text-sm font-semibold text-brand-navy shadow-lg transition hover:bg-brand-cream disabled:cursor-wait disabled:opacity-70 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-navy"
         >
           {locationStatus === 'loading' ? 'Finding you…' : locationStatus === 'ready' ? 'Refresh my location' : '◎ Use my location'}
         </button>
-        {locationStatus === 'denied' && <p role="status" className="rounded-lg bg-white/95 px-3 py-2 text-right text-xs text-slate-700 shadow">Location permission is off. You can enable it in browser settings.</p>}
-        {locationStatus === 'unsupported' && <p role="status" className="rounded-lg bg-white/95 px-3 py-2 text-right text-xs text-slate-700 shadow">Location isn’t supported by this browser.</p>}
-        {locationStatus === 'error' && <p role="status" className="rounded-lg bg-white/95 px-3 py-2 text-right text-xs text-slate-700 shadow">Couldn’t get your location. Please try again.</p>}
+        {locationStatus === 'denied' && <p role="status" className="rounded-lg bg-brand-cream/95 px-3 py-2 text-right text-xs text-brand-navy shadow">Location permission is off. You can enable it in browser settings.</p>}
+        {locationStatus === 'unsupported' && <p role="status" className="rounded-lg bg-brand-cream/95 px-3 py-2 text-right text-xs text-brand-navy shadow">Location isn’t supported by this browser.</p>}
+        {locationStatus === 'error' && <p role="status" className="rounded-lg bg-brand-cream/95 px-3 py-2 text-right text-xs text-brand-navy shadow">Couldn’t get your location. Please try again.</p>}
       </div>
 
       <aside
@@ -95,7 +95,7 @@ export default function Discover() {
         aria-label="Available sessions"
         aria-hidden={!listOpen}
         inert={!listOpen}
-        className={`absolute inset-y-0 left-0 z-[999] flex w-[min(32rem,calc(100%-1rem))] flex-col border-r border-slate-200 bg-white shadow-xl transition-transform duration-300 ease-out ${listOpen ? 'translate-x-0' : '-translate-x-full'}`}
+        className={`absolute inset-y-0 left-0 z-[999] flex w-[min(32rem,calc(100%-1rem))] flex-col border-r border-brand-navy/20 bg-brand-cream shadow-xl transition-transform duration-300 ease-out ${listOpen ? 'translate-x-0' : '-translate-x-full'}`}
       >
         {listOpen && (
           <button
@@ -104,25 +104,25 @@ export default function Discover() {
             aria-controls="session-list-panel"
             aria-label="Close game list"
             onClick={() => setListOpen(false)}
-            className="absolute right-3 top-3 z-10 inline-flex h-9 w-9 items-center justify-center rounded-full border border-slate-200 bg-white text-xl leading-none text-slate-700 shadow-sm transition hover:bg-slate-100 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-emerald-700"
+            className="absolute right-3 top-3 z-10 inline-flex h-9 w-9 items-center justify-center rounded-full border border-brand-navy/20 bg-brand-cream text-xl leading-none text-brand-navy shadow-sm transition hover:bg-brand-navy/5 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-navy"
           >
             <span aria-hidden="true">×</span>
           </button>
         )}
-        <div className="border-b border-slate-200 px-4 pb-3 pt-3">
+        <div className="border-b border-brand-navy/20 px-4 pb-3 pt-3">
           <h1 className="text-xl font-bold">Games nearby</h1>
-          <p className="mt-1 text-sm text-slate-500">Find a group and get out to play.</p>
+          <p className="mt-1 text-sm text-brand-navy/75">Find a group and get out to play.</p>
         </div>
-        <div className="flex gap-2 border-b border-slate-200 p-3">
-          <select value={sport} onChange={(e) => setSport(e.target.value)} className="flex-1 rounded-lg border border-slate-300 px-2 py-1">
+        <div className="flex gap-2 border-b border-brand-navy/20 p-3">
+          <select value={sport} onChange={(e) => setSport(e.target.value)} className="flex-1 rounded-lg border border-brand-navy/20 px-2 py-1">
             <option value="">All sports</option>
             {SPORTS.map((s) => (
               <option key={s} value={s}>
-                {capitalize(s)}
+                {SPORT_EMOJI[s]} {capitalize(s)}
               </option>
             ))}
           </select>
-          <select value={level} onChange={(e) => setLevel(e.target.value)} className="flex-1 rounded-lg border border-slate-300 px-2 py-1">
+          <select value={level} onChange={(e) => setLevel(e.target.value)} className="flex-1 rounded-lg border border-brand-navy/20 px-2 py-1">
             <option value="">All levels</option>
             {LEVELS.map((l) => (
               <option key={l} value={l}>
@@ -133,8 +133,8 @@ export default function Discover() {
         </div>
 
         <div className="flex-1 space-y-3 overflow-y-auto p-3">
-          {error && <p className="text-sm text-red-600">{error}</p>}
-          {!error && sessions.length === 0 && <p className="text-sm text-slate-500">No open sessions match these filters.</p>}
+          {error && <p className="text-sm text-brand-navy">{error}</p>}
+          {!error && sessions.length === 0 && <p className="text-sm text-brand-navy/75">No open sessions match these filters.</p>}
           {sessions.map((session) => (
             <SessionCard
               key={session.id}

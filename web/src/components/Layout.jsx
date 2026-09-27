@@ -5,7 +5,7 @@ import { signOut, useAuth } from '../lib/auth'
 import SessionChatLauncher from './SessionChatLauncher'
 
 function navClass({ isActive }) {
-  return `rounded-lg px-3 py-2 text-sm font-medium ${isActive ? 'bg-slate-900 text-white' : 'hover:bg-slate-100'}`
+  return `rounded-lg px-3 py-2 text-sm font-medium ${isActive ? 'bg-brand-navy text-brand-cream' : 'hover:bg-brand-navy/5'}`
 }
 
 export default function Layout() {
@@ -24,7 +24,7 @@ export default function Layout() {
 
   return (
     <div className="flex h-full flex-col">
-      <header className="flex items-center justify-between border-b border-slate-200 bg-white px-4 py-3">
+      <header className="flex items-center justify-between border-b border-brand-navy/20 bg-brand-cream px-4 py-3">
         <Link to="/" className="text-xl font-black tracking-tight">
           RALL-E
         </Link>
@@ -38,14 +38,14 @@ export default function Layout() {
           <NavLink to="/create" className={navClass}>
             + Create session
           </NavLink>
-          <Link to="/onboarding" className="ml-2 text-sm text-slate-500 hover:underline">
+          <Link to="/onboarding" className="ml-2 text-sm text-brand-navy/75 hover:underline">
             {user?.name}
           </Link>
           {authEnabled && (
             <button
               type="button"
               onClick={handleSignOut}
-              className="ml-1 rounded-lg border border-slate-300 px-3 py-1.5 text-sm text-slate-600 hover:bg-slate-100"
+              className="ml-1 rounded-lg border border-brand-navy/20 px-3 py-1.5 text-sm text-brand-navy/75 hover:bg-brand-navy/5"
             >
               Log out
             </button>
@@ -54,7 +54,7 @@ export default function Layout() {
       </header>
 
       {usingMockData && (
-        <div className="bg-amber-100 px-4 py-1 text-center text-xs text-amber-900">
+        <div className="bg-brand-orange px-4 py-1 text-center text-xs text-brand-navy">
           Using mock data: add web/.env to connect Supabase
         </div>
       )}

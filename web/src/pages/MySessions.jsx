@@ -22,8 +22,8 @@ export default function MySessions() {
     return subscribeToChanges([{ table: 'sessions' }, { table: 'session_participants' }], load)
   }, [load])
 
-  if (error) return <p className="p-6 text-red-600">{error}</p>
-  if (!sessions) return <p className="p-6 text-slate-500">Loading…</p>
+  if (error) return <p className="p-6 text-brand-navy">{error}</p>
+  if (!sessions) return <p className="p-6 text-brand-navy/75">Loading…</p>
 
   const now = new Date().toISOString()
   const upcoming = sessions.filter((s) => s.start_time >= now)
@@ -39,12 +39,12 @@ export default function MySessions() {
         <h1 className="text-2xl font-bold">My sessions</h1>
 
         {upcoming.length === 0 ? (
-          <div className="rounded-xl border border-dashed border-slate-300 bg-white p-8 text-center">
+          <div className="rounded-xl border border-dashed border-brand-navy/20 bg-brand-cream p-8 text-center">
             <p className="font-medium">You haven't joined any upcoming sessions yet.</p>
-            <p className="mt-1 text-sm text-slate-500">Find a game near you and meet people who play at your level.</p>
+            <p className="mt-1 text-sm text-brand-navy/75">Find a game near you and meet people who play at your level.</p>
             <Link
               to="/"
-              className="mt-4 inline-block rounded-xl bg-emerald-600 px-5 py-2 font-semibold text-white hover:bg-emerald-700"
+              className="mt-4 inline-block rounded-xl bg-brand-lime px-5 py-2 font-semibold text-brand-navy hover:bg-brand-lime/80"
             >
               Find a session
             </Link>
@@ -64,7 +64,7 @@ export default function MySessions() {
 
         {past.length > 0 && (
           <details className="group">
-            <summary className="cursor-pointer text-sm font-medium text-slate-500 hover:text-slate-900">
+            <summary className="cursor-pointer text-sm font-medium text-brand-navy/75 hover:text-brand-navy">
               Past sessions ({past.length})
             </summary>
             <div className="mt-3 space-y-3 opacity-75">

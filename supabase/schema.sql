@@ -75,15 +75,20 @@ language plpgsql
 as $$
 declare
   v_capacity int;
+  v_start_time timestamptz;
   v_count int;
 begin
-  select capacity into v_capacity from sessions where id = p_session_id for update;
+  select capacity, start_time into v_capacity, v_start_time from sessions where id = p_session_id for update;
   if v_capacity is null then
     raise exception 'Session not found';
   end if;
 
   if exists (select 1 from session_participants where session_id = p_session_id and user_id = p_user_id) then
     return;
+  end if;
+
+  if v_start_time <= now() then
+    raise exception 'This session has already started';
   end if;
 
   select count(*) into v_count from session_participants where session_id = p_session_id;

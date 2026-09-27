@@ -1,7 +1,7 @@
 import { SPORT_EMOJI } from '../lib/constants'
 import { capitalize, formatDateTime, formatPrice, formatDistance } from '../lib/format'
 
-export default function SessionCard({ session, tag, selected = false, onClick }) {
+export default function SessionCard({ session, tag, userLocation, selected = false, onClick }) {
   const spotsLeft = session.capacity - session.participant_count
   const distance = formatDistance(userLocation, session.court)
 

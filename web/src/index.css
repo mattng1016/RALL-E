@@ -233,7 +233,21 @@ body {
 /* Official asymmetric wordmark for light-background brand placements. */
 .brand-wordmark {
   display: block;
-  width: 180px;
+  width: 168px;
   height: auto;
+  flex-shrink: 0;
+}
+
+.brand-lockup {
+  display: inline-flex;
+  flex-shrink: 0;
+  align-items: center;
+  gap: 10px;
+}
+
+.brand-symbol {
+  display: block;
+  width: 46px;
+  height: 36px;
   flex-shrink: 0;
 }

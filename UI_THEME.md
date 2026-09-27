@@ -15,6 +15,6 @@ The palette applies to onboarding, login/signup, navigation, discovery, session 
 
 ## Shared brand assets
 
-The complete source kit is checked into `web/public/brand/`; its `BRAND-GUIDE.md` describes each asset and when to use it. Use `BrandWordmark` from `web/src/components/BrandWordmark.jsx` for the asymmetric Special Elite wordmark in the light-background navigation and onboarding. Its source and usage guide are in `web/public/brand/wordmark-only/`. Keep the horizontal cream logo from `BrandLogo` for the dark login panel. Use the racket symbol and favicon assets only in compact placements.
+The complete source kit is checked into `web/public/brand/`; its `BRAND-GUIDE.md` describes each asset and when to use it. Use `BrandWordmark` from `web/src/components/BrandWordmark.jsx` for the navy racket symbol beside the asymmetric Special Elite wordmark in the light-background navigation and onboarding. The symbol comes from `web/public/brand/symbol-navy.svg`; the wordmark source and usage guide are in `web/public/brand/wordmark-only/`. Keep the horizontal cream logo from `BrandLogo` for the dark login panel. Use favicon assets only in compact placements.
 
 Keep app colors in the `brand-navy`, `brand-lime`, `brand-orange`, and `brand-cream` Tailwind tokens in `web/src/index.css`. Reuse these tokens and the checked-in assets when editing pages or components; do not recreate logos with text or introduce competing brand colors. The browser tab icons, app name, and theme color are configured in `web/index.html`.

@@ -11,6 +11,7 @@ import {
 } from '../lib/api'
 import { SPORT_EMOJI } from '../lib/constants'
 import { capitalize, formatDateTime, formatPrice } from '../lib/format'
+import { hasStarted } from '../lib/sessionTime'
 
 function Chat({ sessionId, user }) {
   const [messages, setMessages] = useState([])
@@ -101,6 +102,7 @@ export default function SessionDetail() {
   const spotsLeft = session.capacity - session.participant_count
   const hasJoined = session.participants.some((p) => p.id === user.id)
   const isHost = session.host_id === user.id
+  const started = hasStarted(session)
 
   return (
     <div className="h-full overflow-y-auto">
@@ -151,14 +153,18 @@ export default function SessionDetail() {
           ) : hasJoined ? (
             <div className="space-y-2">
               <p className="rounded-xl bg-emerald-50 py-3 text-center font-semibold text-emerald-700">You're in! ✓</p>
-              <button
-                onClick={() => runAction(leaveSession)}
-                disabled={busy}
-                className="w-full text-sm text-slate-500 hover:text-red-600 hover:underline disabled:opacity-50"
-              >
-                {busy ? 'Leaving…' : "Can't make it? Leave session"}
-              </button>
+              {!started && (
+                <button
+                  onClick={() => runAction(leaveSession)}
+                  disabled={busy}
+                  className="w-full text-sm text-slate-500 hover:text-red-600 hover:underline disabled:opacity-50"
+                >
+                  {busy ? 'Leaving…' : "Can't make it? Leave session"}
+                </button>
+              )}
             </div>
+          ) : started ? (
+            <p className="rounded-xl bg-slate-100 py-3 text-center font-semibold text-slate-500">This session has already started</p>
           ) : (
             <button
               onClick={() => runAction(joinSession)}

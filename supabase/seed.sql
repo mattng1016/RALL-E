@@ -19,13 +19,13 @@ insert into users (id, name, sport, level) values
   ('u5', 'Kenji', 'badminton', 'advanced');
 
 insert into sessions (id, host_id, court_id, sport, level, start_time, duration_min, capacity, price, is_coach, description) values
-  ('s1', 'u3', 'c5', 'badminton', 'beginner', date_trunc('hour', now()) + interval '3 hours', 90, 4, 5, false, 'Chill beginner doubles, rackets provided!'),
+  ('s1', 'u3', 'c5', 'badminton', 'beginner', date_trunc('hour', now()) + interval '3 hours', 120, 4, 5, false, 'Chill beginner doubles, rackets provided!'),
   ('s2', 'u2', 'c2', 'tennis', 'intermediate', date_trunc('hour', now()) + interval '5 hours', 60, 2, 0, false, 'Looking for a hitting partner, rally + a few sets.'),
   ('s3', 'u4', 'c1', 'tennis', 'beginner', date_trunc('hour', now()) + interval '20 hours', 60, 6, 25, true, 'Group lesson: forehand, backhand and serve basics.'),
   ('s4', 'u5', 'c7', 'badminton', 'advanced', date_trunc('hour', now()) + interval '26 hours', 120, 4, 8, false, 'Competitive doubles, bring your own shuttles.'),
   ('s5', 'u1', 'c6', 'badminton', 'beginner', date_trunc('hour', now()) + interval '28 hours', 60, 4, 6, false, 'New to Vancouver, just want to play and meet people :)'),
-  ('s6', 'u2', 'c3', 'tennis', 'advanced', date_trunc('hour', now()) + interval '44 hours', 90, 4, 0, false, 'Doubles by the seawall, NTRP 4.0+.'),
-  ('s7', 'u3', 'c8', 'badminton', 'intermediate', date_trunc('hour', now()) + interval '50 hours', 90, 6, 5, false, 'Rotating doubles, all friendly.'),
+  ('s6', 'u2', 'c3', 'tennis', 'advanced', date_trunc('hour', now()) + interval '44 hours', 120, 4, 0, false, 'Doubles by the seawall, NTRP 4.0+.'),
+  ('s7', 'u3', 'c8', 'badminton', 'intermediate', date_trunc('hour', now()) + interval '50 hours', 120, 6, 5, false, 'Rotating doubles, all friendly.'),
   ('s8', 'u4', 'c4', 'tennis', 'intermediate', date_trunc('hour', now()) + interval '68 hours', 60, 4, 30, true, 'Drills + match play with a certified coach.');
 
 insert into session_participants (session_id, user_id) values

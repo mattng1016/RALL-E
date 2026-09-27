@@ -1,5 +1,6 @@
 import { supabase } from './supabase'
 import * as mock from '../data/mock'
+import { durationError, startTimeError } from './sessionTime'
 
 const USER_KEY = 'ralle_user'
 
@@ -139,6 +140,10 @@ export async function getSession(id) {
 }
 
 export async function createSession(fields, hostId) {
+  const start = new Date(fields.start_time)
+  const timeError = startTimeError(start) || durationError(fields.duration_min, start)
+  if (timeError) throw new Error(timeError)
+
   if (supabase) {
     const { data, error } = await supabase
       .from('sessions')
@@ -166,6 +171,7 @@ export async function joinSession(sessionId, userId) {
   const session = mock.sessions.find((s) => s.id === sessionId)
   const joined = mock.sessionParticipants.filter((p) => p.session_id === sessionId)
   if (joined.some((p) => p.user_id === userId)) return
+  if (new Date(session.start_time) <= new Date()) throw new Error('This session has already started')
   if (joined.length >= session.capacity) throw new Error('Session is full')
   mock.sessionParticipants.push({ session_id: sessionId, user_id: userId })
 }

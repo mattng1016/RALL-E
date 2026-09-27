@@ -3,6 +3,16 @@ import { useNavigate } from 'react-router-dom'
 import { createSession, getCourts, getCurrentUser } from '../lib/api'
 import { LEVELS, SPORT_EMOJI, SPORTS } from '../lib/constants'
 import { capitalize } from '../lib/format'
+import {
+  defaultStartTime,
+  durationError,
+  earliestStart,
+  formatHour,
+  hourSlotsForDate,
+  latestStart,
+  startTimeError,
+  toDateInput,
+} from '../lib/sessionTime'
 
 function Field({ label, children }) {
   return (
@@ -21,11 +31,13 @@ export default function CreateSession() {
   const [courts, setCourts] = useState([])
   const [error, setError] = useState(null)
   const [saving, setSaving] = useState(false)
+  const initialStart = defaultStartTime()
+  const [date, setDate] = useState(toDateInput(initialStart))
+  const [hour, setHour] = useState(initialStart.getHours())
+  const [hours, setHours] = useState('1')
   const [form, setForm] = useState({
     sport: user?.sport ?? 'badminton',
     court_id: '',
-    start_time: '',
-    duration_min: 60,
     capacity: 4,
     level: user?.level ?? 'beginner',
     price: 0,
@@ -46,14 +58,22 @@ export default function CreateSession() {
 
   async function handleSubmit(event) {
     event.preventDefault()
+    const startTime = new Date(`${date}T${String(hour).padStart(2, '0')}:00`)
+    const durationMin = Number(hours) * 60
+    const timeError = startTimeError(startTime) || durationError(durationMin, startTime)
+    if (timeError) {
+      setError(timeError)
+      return
+    }
+
     setSaving(true)
     setError(null)
     try {
       const id = await createSession(
         {
           ...form,
-          start_time: new Date(form.start_time).toISOString(),
-          duration_min: Number(form.duration_min),
+          start_time: startTime.toISOString(),
+          duration_min: durationMin,
           capacity: Number(form.capacity),
           price: Number(form.price),
         },
@@ -103,17 +123,46 @@ export default function CreateSession() {
         </Field>
 
         <div className="grid grid-cols-2 gap-4">
-          <Field label="Start time">
+          <Field label="Date">
             <input
               required
-              type="datetime-local"
-              value={form.start_time}
-              onChange={(e) => update('start_time', e.target.value)}
+              type="date"
+              min={toDateInput(earliestStart())}
+              max={toDateInput(latestStart())}
+              value={date}
+              onChange={(e) => {
+                const nextDate = e.target.value
+                const slots = hourSlotsForDate(nextDate)
+                setDate(nextDate)
+                setHour((current) => (slots.includes(current) ? current : (slots[0] ?? current)))
+              }}
               className={inputClass}
             />
           </Field>
-          <Field label="Duration (min)">
-            <input type="number" min="30" step="30" value={form.duration_min} onChange={(e) => update('duration_min', e.target.value)} className={inputClass} />
+          <Field label="Start time">
+            <select required value={hour} onChange={(e) => setHour(Number(e.target.value))} className={inputClass}>
+              {hourSlotsForDate(date).map((slot) => (
+                <option key={slot} value={slot}>
+                  {formatHour(slot)}
+                </option>
+              ))}
+            </select>
+          </Field>
+          <p className="col-span-2 text-xs text-slate-500">On the hour, at least 30 minutes from now, up to 60 days ahead.</p>
+          <Field label="How long (hours)">
+            <input
+              required
+              type="number"
+              min="1"
+              max={24 - hour}
+              step="1"
+              value={hours}
+              onChange={(e) => setHours(e.target.value)}
+              className={inputClass}
+            />
+            <span className="text-xs font-normal text-slate-500">
+              Up to {24 - hour} {24 - hour === 1 ? 'hour' : 'hours'} so it ends by midnight.
+            </span>
           </Field>
           <Field label="Capacity">
             <input type="number" min="2" max="20" value={form.capacity} onChange={(e) => update('capacity', e.target.value)} className={inputClass} />

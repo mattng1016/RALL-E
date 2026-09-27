@@ -1,6 +1,8 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
+import { Link } from 'react-router-dom'
 import { getCurrentUser, getMessages, getMySessions, sendMessage, subscribeToChanges } from '../lib/api'
 import { SPORT_EMOJI } from '../lib/constants'
+import { profilePreview } from '../lib/format'
 
 function formatSessionStart(value) {
   const start = new Date(value)
@@ -27,26 +29,26 @@ function isSameMessageBurst(first, second) {
 
 function SessionRow({ session, onOpen, onAction, actionLabel }) {
   return (
-    <div className="flex items-center gap-1 rounded-xl pr-1 hover:bg-brand-cream">
+    <div className="flex items-center gap-1 rounded-xl pr-1 hover:bg-brand-cream/70">
       <button
         type="button"
         onClick={onOpen}
         className="flex min-w-0 flex-1 items-center gap-3 rounded-xl p-3 text-left focus-visible:outline-2 focus-visible:outline-brand-navy"
       >
-        <span className="grid h-10 w-10 shrink-0 place-items-center rounded-full bg-brand-lime text-lg">{SPORT_EMOJI[session.sport]}</span>
+        <span className="grid h-10 w-10 shrink-0 place-items-center rounded-full bg-brand-lime/35 text-lg">{SPORT_EMOJI[session.sport]}</span>
         <span className="min-w-0 flex-1">
           <span className="block truncate text-sm font-semibold text-brand-navy">{session.court?.name ?? 'Sports session'}</span>
-          <span className="block truncate text-xs font-medium text-brand-navy">{formatSessionStart(session.start_time)}</span>
+          <span className="block truncate text-xs font-medium text-[#1A265A]">{formatSessionStart(session.start_time)}</span>
           <span className="block truncate text-xs text-brand-navy/75">{session.participant_count} {session.participant_count === 1 ? 'player' : 'players'} · {session.host?.name ?? 'Session chat'}</span>
         </span>
-        <span aria-hidden="true" className="text-brand-navy/75">›</span>
+        <span aria-hidden="true" className="text-brand-navy/45">›</span>
       </button>
       <button
         type="button"
         onClick={onAction}
         aria-label={`${actionLabel} ${session.court?.name ?? 'session chat'}`}
         title={actionLabel}
-        className="grid h-8 w-8 shrink-0 place-items-center rounded-full text-lg text-brand-navy/75 hover:bg-brand-cream hover:text-brand-navy focus-visible:outline-2 focus-visible:outline-brand-navy"
+        className="grid h-8 w-8 shrink-0 place-items-center rounded-full text-lg text-brand-navy/45 hover:bg-brand-cream hover:text-brand-navy focus-visible:outline-2 focus-visible:outline-brand-navy"
       >
         {actionLabel === 'Archive' ? '×' : '↶'}
       </button>
@@ -172,7 +174,7 @@ export default function SessionChatLauncher() {
             <button type="button" onClick={() => setOpen(false)} aria-label="Close chats" className="rounded-lg px-2 py-1 text-xl leading-none text-brand-navy/75 hover:bg-brand-navy/5">×</button>
           </header>
 
-          {error && <p role="alert" className="border-b border-brand-orange bg-brand-orange/10 px-3 py-2 text-xs text-brand-navy">{error}</p>}
+          {error && <p role="alert" className="border-b border-red-100 bg-red-50 px-3 py-2 text-xs text-red-700">{error}</p>}
 
           {!selectedSession ? (
             <div className="flex-1 space-y-1 overflow-y-auto p-2">
@@ -206,7 +208,7 @@ export default function SessionChatLauncher() {
             </div>
           ) : (
             <>
-              <div className="flex-1 space-y-2 overflow-y-auto bg-brand-cream p-3">
+              <div className="flex-1 space-y-2 overflow-y-auto bg-brand-cream/70 p-3">
                 {messages.length === 0 && <p className="py-6 text-center text-sm text-brand-navy/75">No messages yet. Say hi!</p>}
                 {messages.map((message, index) => {
                   const mine = message.user_id === user.id
@@ -218,7 +220,13 @@ export default function SessionChatLauncher() {
                     <div key={message.id} style={{ marginTop: groupedWithPrevious ? 2 : undefined }} className={`flex ${mine ? 'justify-end' : 'justify-start'}`}>
                       <div className="max-w-[85%]">
                         <div className={`rounded-2xl px-3 py-2 text-sm ${mine ? `${groupedWithNext ? 'rounded-br-xl' : 'rounded-br-sm'} bg-brand-navy text-brand-cream` : `${groupedWithNext ? 'rounded-bl-xl' : 'rounded-bl-sm'} bg-brand-cream text-brand-navy shadow-sm`}`}>
-                          {!mine && !groupedWithPrevious && <p className="mb-0.5 text-xs font-semibold text-brand-navy/75">{message.user?.name ?? 'Player'}</p>}
+                          {!mine && !groupedWithPrevious && (
+                            <p className="mb-0.5 text-xs font-semibold">
+                              {message.user_id
+                                ? <Link to={`/profile/${message.user_id}`} title={profilePreview(message.user)} className="text-brand-navy/75 hover:text-brand-navy hover:underline focus-visible:underline">{message.user?.name ?? 'Player'}</Link>
+                                : <span className="text-brand-navy/75">{message.user?.name ?? 'Player'}</span>}
+                            </p>
+                          )}
                           <p className="whitespace-pre-wrap break-words">{message.text}</p>
                         </div>
                         {!groupedWithNext && (
@@ -239,9 +247,9 @@ export default function SessionChatLauncher() {
                   maxLength={1000}
                   placeholder="Write a message…"
                   aria-label="Message"
-                  className="min-w-0 flex-1 rounded-full border border-brand-navy/20 px-4 py-2 text-sm outline-none focus:border-brand-navy/20"
+                  className="min-w-0 flex-1 rounded-full border border-brand-navy/25 px-4 py-2 text-sm outline-none focus:border-brand-navy"
                 />
-                <button type="submit" disabled={!text.trim() || sending} className="rounded-full bg-brand-navy px-4 py-2 text-sm font-semibold text-brand-cream hover:bg-brand-navy disabled:cursor-not-allowed disabled:opacity-50">
+                <button type="submit" disabled={!text.trim() || sending} className="rounded-full bg-brand-navy px-4 py-2 text-sm font-semibold text-brand-cream hover:bg-brand-navy/90 disabled:cursor-not-allowed disabled:opacity-50">
                   {sending ? '…' : 'Send'}
                 </button>
               </form>
@@ -255,7 +263,7 @@ export default function SessionChatLauncher() {
         onClick={() => setOpen((value) => !value)}
         aria-expanded={open}
         aria-label={open ? 'Close session chats' : 'Open session chats'}
-        className="inline-flex items-center gap-2 rounded-full bg-brand-navy px-5 py-3 font-semibold text-brand-cream shadow-xl transition hover:bg-brand-navy focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-navy"
+        className="inline-flex items-center gap-2 rounded-full bg-brand-navy px-5 py-3 font-semibold text-brand-cream shadow-xl transition hover:bg-brand-navy/90 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-navy"
       >
         <span aria-hidden="true">▰</span> Chats {activeSessions.length > 0 && <span className="rounded-full bg-brand-cream/20 px-2 py-0.5 text-xs">{activeSessions.length}</span>}
       </button>

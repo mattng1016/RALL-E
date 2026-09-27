@@ -1,5 +1,6 @@
 import { supabase } from './supabase'
 import * as mock from '../data/mock'
+import { durationError, startTimeError } from './sessionTime'
 
 const USER_KEY = 'ralle_user'
 
@@ -38,9 +39,122 @@ export async function loadProfile(userId) {
   return data
 }
 
+export async function getUserProfile(userId) {
+  if (supabase) {
+    const { data, error } = await supabase.from('users').select('*').eq('id', userId).maybeSingle()
+    if (error) throw error
+    if (!data) return null
+    const [detailsResult, sportsResult] = await Promise.all([
+      supabase.rpc('get_public_profile_details', { target_user_id: userId }),
+      supabase.from('user_sports').select('sport,skill_level,position').eq('user_id', userId).order('position'),
+    ])
+    if (detailsResult.error) throw detailsResult.error
+    if (sportsResult.error) throw sportsResult.error
+    const sports = sportsResult.data.length
+      ? sportsResult.data
+      : [{ sport: data.sport, skill_level: data.level === 'beginner' ? 'Just starting' : data.level === 'intermediate' ? 'Intermediate' : 'Advanced' }]
+    return { ...data, ...(detailsResult.data ?? {}), sports }
+  }
+
+  const user = mock.users.find((profile) => profile.id === userId)
+  if (!user) return null
+  const publicFields = { id: user.id, name: user.name, sport: user.sport, level: user.level, bio: user.bio, created_at: user.created_at }
+  const sports = user.sports ?? [{ sport: user.sport, skill_level: user.level === 'beginner' ? 'Just starting' : user.level === 'intermediate' ? 'Intermediate' : 'Advanced' }]
+  return {
+    ...publicFields,
+    sports,
+    sex: user.sex_public ? user.sex : null,
+    age: user.age_public ? user.age : null,
+    is_coach: user.coach_public ? Boolean(user.is_coach) : null,
+    coach_certificate_path: undefined,
+  }
+}
+
+const EMPTY_PROFILE_DETAILS = {
+  sex: '', age: null, sex_public: false, age_public: false,
+  is_coach: false, coach_public: false, coach_certificate_path: null,
+}
+
+export async function getOwnProfileDetails(userId) {
+  if (supabase) {
+    const { data, error } = await supabase.from('user_profile_private').select('*').eq('user_id', userId).maybeSingle()
+    if (error) throw error
+    return { ...EMPTY_PROFILE_DETAILS, ...(data ?? {}) }
+  }
+
+  const user = mock.users.find((profile) => profile.id === userId)
+  let saved = {}
+  try {
+    saved = JSON.parse(localStorage.getItem(`ralle_private_profile_${userId}`) ?? '{}')
+  } catch {
+    // Ignore malformed local profile details and use defaults.
+  }
+  return { ...EMPTY_PROFILE_DETAILS, ...(user ?? {}), ...saved }
+}
+
+export async function getOwnProfileSports(userId) {
+  if (supabase) {
+    const { data, error } = await supabase.from('user_sports').select('sport,skill_level,position').eq('user_id', userId).order('position')
+    if (error) throw error
+    if (data.length) return data
+    const { data: user, error: profileError } = await supabase.from('users').select('sport,level').eq('id', userId).single()
+    if (profileError) throw profileError
+    return [{ sport: user.sport, skill_level: user.level === 'beginner' ? 'Just starting' : user.level === 'intermediate' ? 'Intermediate' : 'Advanced' }]
+  }
+
+  const stored = localStorage.getItem(`ralle_profile_sports_${userId}`)
+  if (stored) {
+    try {
+      return JSON.parse(stored)
+    } catch {
+      // Recover from malformed local preferences with the saved primary sport.
+    }
+  }
+  const user = mock.users.find((profile) => profile.id === userId)
+  return user?.sports ?? (user ? [{ sport: user.sport, skill_level: user.level === 'beginner' ? 'Just starting' : user.level === 'intermediate' ? 'Intermediate' : 'Advanced' }] : [])
+}
+
+export async function saveOwnProfileSports(userId, sports) {
+  if (!sports.length) throw new Error('Choose at least one sport.')
+  if (supabase) {
+    const { error } = await supabase.rpc('save_user_sports', { sports_data: sports })
+    if (error) throw error
+    return sports
+  }
+
+  const user = mock.users.find((profile) => profile.id === userId)
+  if (user) user.sports = sports
+  localStorage.setItem(`ralle_profile_sports_${userId}`, JSON.stringify(sports))
+  return sports
+}
+
+export async function saveOwnProfileDetails(userId, details) {
+  const row = { user_id: userId, ...details }
+  if (supabase) {
+    const { error } = await supabase.from('user_profile_private').upsert(row)
+    if (error) throw error
+    return row
+  }
+
+  const user = mock.users.find((profile) => profile.id === userId)
+  if (user) Object.assign(user, details)
+  localStorage.setItem(`ralle_private_profile_${userId}`, JSON.stringify(details))
+  return row
+}
+
+export async function uploadCoachCertificate(userId, file) {
+  if (!supabase) return `mock/${userId}/${file.name}`
+  const extension = file.name.split('.').pop()?.toLowerCase() || 'file'
+  const path = `${userId}/${crypto.randomUUID()}.${extension}`
+  const { error } = await supabase.storage.from('coach-certificates').upload(path, file, { upsert: false })
+  if (error) throw error
+  return path
+}
+
 // Pass the auth user's id when signed in; mock mode generates one.
-export async function saveUser({ id, name, sport, level }) {
-  const user = { id: id ?? getCurrentUser()?.id ?? crypto.randomUUID(), name, sport, level }
+export async function saveUser({ id, name, sport, level, bio = '' }) {
+  const previous = getCurrentUser()
+  const user = { ...previous, id: id ?? previous?.id ?? crypto.randomUUID(), name, sport, level, bio: bio.trim() }
 
   if (supabase) {
     const { error } = await supabase.from('users').upsert(user)
@@ -147,6 +261,10 @@ export async function getSession(id) {
 }
 
 export async function createSession(fields, hostId) {
+  const start = new Date(fields.start_time)
+  const timeError = startTimeError(start) || durationError(fields.duration_min, start)
+  if (timeError) throw new Error(timeError)
+
   if (supabase) {
     const { data, error } = await supabase
       .from('sessions')
@@ -174,6 +292,7 @@ export async function joinSession(sessionId, userId) {
   const session = mock.sessions.find((s) => s.id === sessionId)
   const joined = mock.sessionParticipants.filter((p) => p.session_id === sessionId)
   if (joined.some((p) => p.user_id === userId)) return
+  if (new Date(session.start_time) <= new Date()) throw new Error('This session has already started')
   if (joined.length >= session.capacity) throw new Error('Session is full')
   mock.sessionParticipants.push({ session_id: sessionId, user_id: userId })
 }
@@ -217,7 +336,7 @@ export async function getMessages(sessionId) {
   if (supabase) {
     const { data, error } = await supabase
       .from('messages')
-      .select('*, user:users(name)')
+      .select('*, user:users(*)')
       .eq('session_id', sessionId)
       .order('created_at')
     if (error) throw error

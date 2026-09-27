@@ -31,7 +31,7 @@ export const users = [
 export const sessions = [
   {
     id: 's1', host_id: 'u3', court_id: 'c5', sport: 'badminton', level: 'beginner',
-    start_time: hoursFromNow(3), duration_min: 90, capacity: 4, price: 5, is_coach: false,
+    start_time: hoursFromNow(3), duration_min: 120, capacity: 4, price: 5, is_coach: false,
     description: 'Chill beginner doubles, rackets provided!',
   },
   {
@@ -56,12 +56,12 @@ export const sessions = [
   },
   {
     id: 's6', host_id: 'u2', court_id: 'c3', sport: 'tennis', level: 'advanced',
-    start_time: hoursFromNow(44), duration_min: 90, capacity: 4, price: 0, is_coach: false,
+    start_time: hoursFromNow(44), duration_min: 120, capacity: 4, price: 0, is_coach: false,
     description: 'Doubles by the seawall, NTRP 4.0+.',
   },
   {
     id: 's7', host_id: 'u3', court_id: 'c8', sport: 'badminton', level: 'intermediate',
-    start_time: hoursFromNow(50), duration_min: 90, capacity: 6, price: 5, is_coach: false,
+    start_time: hoursFromNow(50), duration_min: 120, capacity: 6, price: 5, is_coach: false,
     description: 'Rotating doubles, all friendly.',
   },
   {

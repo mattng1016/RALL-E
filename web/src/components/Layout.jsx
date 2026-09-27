@@ -35,7 +35,7 @@ export default function Layout() {
 
   return (
     <div className="flex h-full flex-col">
-      <header className="flex flex-wrap items-center justify-between gap-x-6 gap-y-3 border-b border-brand-navy/20 bg-brand-cream px-4 py-3">
+      <header className="relative z-[1300] flex flex-wrap items-center justify-between gap-x-6 gap-y-3 border-b border-brand-navy/20 bg-brand-cream px-4 py-3">
         <Link to="/" className="brand-home" aria-label="RALL-E home">
           <BrandWordmark />
         </Link>

@@ -3,7 +3,7 @@ import { createPortal } from 'react-dom'
 import SessionCard from '../components/SessionCard'
 import SessionMap from '../components/SessionMap'
 import { getSessions, subscribeToChanges } from '../lib/api'
-import { LEVELS, PROFILE_SPORTS } from '../lib/constants'
+import { LEVELS, PROFILE_SPORTS, SPORTS } from '../lib/constants'
 import { capitalize } from '../lib/format'
 
 // The current demo courts don't store a city field. Prefer one if the database gains it;
@@ -54,11 +54,14 @@ function FilterDropdown({ label, value, placeholder, options, onChange, open, on
               type="button"
               role="option"
               aria-selected={option.value === value}
+              aria-disabled={Boolean(option.disabled)}
+              disabled={option.disabled}
               onClick={() => { onChange(option.value); onOpenChange(false) }}
-              className={`flex min-h-10 w-full items-center gap-2.5 rounded-lg px-3 py-2 text-left text-sm transition ${option.value === value ? 'bg-slate-100 font-semibold text-slate-900' : 'text-slate-700 hover:bg-slate-50'}`}
+              className={`flex min-h-10 w-full items-center gap-2.5 rounded-lg px-3 py-2 text-left text-sm transition ${option.disabled ? 'cursor-not-allowed text-slate-400' : option.value === value ? 'bg-slate-100 font-semibold text-slate-900' : 'text-slate-700 hover:bg-slate-50'}`}
             >
               {option.icon && <span className="grid h-6 w-6 shrink-0 place-items-center" aria-hidden="true">{option.icon}</span>}
-              <span>{option.label}</span>
+              <span className="flex-1">{option.label}</span>
+              {option.disabled && <span className="text-[10px] font-semibold uppercase tracking-wide text-slate-400">Coming soon</span>}
             </button>
           ))}
         </div>
@@ -281,7 +284,7 @@ export default function Discover() {
                   label="Sport"
                   value={draftFilters.sport}
                   placeholder="All sports"
-                  options={[{ value: '', label: 'All sports', icon: '🏅' }, ...PROFILE_SPORTS.map((item) => ({ value: item.id, label: item.label, icon: item.icon }))]}
+                  options={[{ value: '', label: 'All sports', icon: '🏅' }, ...PROFILE_SPORTS.map((item) => ({ value: item.id, label: item.label, icon: item.icon, disabled: !SPORTS.includes(item.id) }))]}
                   onChange={(value) => setDraftFilters((current) => ({ ...current, sport: value }))}
                   open={openFilterDropdown === 'sport'}
                   onOpenChange={(open) => setOpenFilterDropdown(open ? 'sport' : null)}

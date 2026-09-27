@@ -230,3 +230,10 @@ body {
   outline: 2px solid #1a265a;
   outline-offset: 5px;
 }
+/* Official asymmetric wordmark for light-background brand placements. */
+.brand-wordmark {
+  display: block;
+  width: 180px;
+  height: auto;
+  flex-shrink: 0;
+}

@@ -1,4 +1,4 @@
-import BrandLogo from '../components/BrandLogo'
+import BrandWordmark from '../components/BrandWordmark'
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { getCurrentUser, saveUser } from '../lib/api'
@@ -47,7 +47,7 @@ export default function Onboarding() {
     <div className="flex min-h-full items-center justify-center bg-brand-cream p-4 text-brand-navy sm:p-6">
       <form onSubmit={handleSubmit} className="w-full max-w-md space-y-6 rounded-2xl border border-brand-navy/15 bg-brand-cream p-6 shadow-sm shadow-brand-navy/10 sm:p-8">
         <div>
-          <h1 className="mb-3"><BrandLogo /></h1>
+          <h1 className="mb-3"><BrandWordmark /></h1>
           <p className="text-brand-navy/75">Find people to play with, wherever you are.</p>
         </div>
 

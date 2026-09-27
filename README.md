@@ -16,7 +16,7 @@ Open http://localhost:5173. Without a `.env` file the app runs on mock data (`we
 
 1. Create a project at [supabase.com](https://supabase.com).
 2. In the SQL editor, run `supabase/schema.sql`, then `supabase/seed.sql`.
-3. Copy `web/.env.example` to `web/.env` and fill in the URL and anon key from Project Settings → API.
+3. Copy `web/.env.example` to the repository root as `.env` and fill in the URL and publishable key from Project Settings → API.
 4. Restart `npm run dev`. The yellow "Using mock data" banner disappears.
 
 ## Project structure

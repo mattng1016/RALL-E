@@ -37,7 +37,7 @@ export default function Layout() {
 
       {usingMockData && (
         <div className="bg-amber-100 px-4 py-1 text-center text-xs text-amber-900">
-          Using mock data: add web/.env to connect Supabase
+          Using mock data: add the repository-root .env to connect Supabase
         </div>
       )}
 

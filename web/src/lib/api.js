@@ -151,10 +151,26 @@ export async function uploadCoachCertificate(userId, file) {
   return path
 }
 
+// users columns the app is allowed to write. Cached profiles also carry
+// sports, coach flags, and other profile fields that are not columns here.
+function profileRow({ id, name, sport, level, bio = '' }) {
+  return {
+    id,
+    name: String(name ?? '').trim(),
+    sport: sport === 'tennis' || sport === 'badminton' ? sport : 'badminton',
+    level: level === 'intermediate' || level === 'advanced' ? level : 'beginner',
+    bio: String(bio ?? '').trim().slice(0, 160),
+  }
+}
+
+function cacheProfile(row, createdAt) {
+  localStorage.setItem(USER_KEY, JSON.stringify(createdAt ? { ...row, created_at: createdAt } : row))
+}
+
 // Pass the auth user's id when signed in; mock mode generates one.
 export async function saveUser({ id, name, sport, level, bio = '' }) {
   const previous = getCurrentUser()
-  const user = { ...previous, id: id ?? previous?.id ?? crypto.randomUUID(), name, sport, level, bio: bio.trim() }
+  const user = profileRow({ id: id ?? previous?.id ?? crypto.randomUUID(), name, sport, level, bio })
 
   if (supabase) {
     const { error } = await supabase.from('users').upsert(user)
@@ -163,17 +179,64 @@ export async function saveUser({ id, name, sport, level, bio = '' }) {
     mock.users.splice(0, mock.users.length, ...mock.users.filter((u) => u.id !== user.id), user)
   }
 
-  localStorage.setItem(USER_KEY, JSON.stringify(user))
+  cacheProfile(user, previous?.id === user.id ? previous.created_at : undefined)
   return user
 }
 
 // The saved user can be missing from the database (onboarded in mock mode, or the DB was reset),
 // which makes joins and messages fail on the users foreign key.
+// Profile writes are limited to the signed-in user, so only sync that row.
 export async function syncCurrentUser() {
-  const user = getCurrentUser()
-  if (!supabase || !user) return
-  const { error } = await supabase.from('users').upsert(user)
+  if (!supabase) return
+  const { data: { session } } = await supabase.auth.getSession()
+  const authUser = session?.user
+  const cached = getCurrentUser()
+  if (!authUser || !cached || cached.id !== authUser.id) return
+  const { error } = await supabase.from('users').upsert(profileRow(cached))
   if (error) console.error('Failed to sync user', error)
+}
+
+// Publishing needs a users row whose id matches the signed-in account.
+async function ensureSessionHost() {
+  const { data: { session } } = await supabase.auth.getSession()
+  const authUser = session?.user
+  if (!authUser) throw new Error('Log in again before publishing a session.')
+
+  const { data: existing, error: readError } = await supabase
+    .from('users')
+    .select('id,name,sport,level,bio,created_at')
+    .eq('id', authUser.id)
+    .maybeSingle()
+  if (readError) throw readError
+  if (existing) {
+    cacheProfile(profileRow(existing), existing.created_at)
+    return authUser.id
+  }
+
+  const cached = getCurrentUser()
+  const same = cached?.id === authUser.id ? cached : null
+  const user = profileRow({
+    id: authUser.id,
+    name: same?.name || authUser.user_metadata?.name || 'Player',
+    sport: same?.sport,
+    level: same?.level,
+    bio: same?.bio ?? '',
+  })
+  const { error } = await supabase.from('users').insert(user)
+  if (error) throw new Error('Save your profile before publishing a session.')
+  cacheProfile(user)
+  return authUser.id
+}
+
+function sessionErrorMessage(error) {
+  const message = error.message ?? ''
+  if (error.code === '23503' && message.includes('host_id')) {
+    return 'Your profile is missing, so this session could not be published. Save your profile and try again.'
+  }
+  if (error.code === '23503' && message.includes('court_id')) {
+    return 'That court is no longer available. Pick another court and try again.'
+  }
+  return message || 'Could not publish this session.'
 }
 
 // ---------- Courts ----------
@@ -266,13 +329,30 @@ export async function createSession(fields, hostId) {
   if (timeError) throw new Error(timeError)
 
   if (supabase) {
+    const host = await ensureSessionHost()
     const { data, error } = await supabase
       .from('sessions')
-      .insert({ ...fields, host_id: hostId })
+      .insert({
+        host_id: host,
+        court_id: fields.court_id,
+        sport: fields.sport,
+        level: fields.level,
+        start_time: fields.start_time,
+        duration_min: Number(fields.duration_min),
+        capacity: Number(fields.capacity),
+        price: Number(fields.price),
+        is_coach: Boolean(fields.is_coach),
+        description: fields.description ?? '',
+      })
       .select('id')
       .single()
-    if (error) throw error
-    await joinSession(data.id, hostId)
+    if (error) throw new Error(sessionErrorMessage(error))
+    try {
+      await joinSession(data.id, host)
+    } catch (err) {
+      await supabase.from('sessions').delete().eq('id', data.id)
+      throw err
+    }
     return data.id
   }
 

@@ -11,6 +11,7 @@ import {
 } from '../lib/api'
 import { SPORT_EMOJI } from '../lib/constants'
 import { capitalize, formatDateTime, formatPrice, profilePreview } from '../lib/format'
+import { hasStarted } from '../lib/sessionTime'
 
 function Chat({ sessionId, user }) {
   const [messages, setMessages] = useState([])

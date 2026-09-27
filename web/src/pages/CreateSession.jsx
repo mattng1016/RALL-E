@@ -66,6 +66,11 @@ export default function CreateSession() {
       return
     }
 
+    if (!user?.id) {
+      setError('Log in again before publishing a session.')
+      return
+    }
+
     setSaving(true)
     setError(null)
     try {
@@ -187,7 +192,7 @@ export default function CreateSession() {
           I'm a coach and this is a lesson
         </label>
 
-        {error && <p className="text-sm text-brand-navy">{error}</p>}
+        {error && <p role="alert" className="rounded-lg border-l-4 border-brand-orange bg-brand-orange/10 p-3 text-sm text-brand-navy">{error}</p>}
 
         <button
           disabled={saving}

@@ -19,6 +19,12 @@ function formatSessionStart(value) {
   return `${dayLabel} · ${timeLabel}`
 }
 
+function isSameMessageBurst(first, second) {
+  if (!first || !second || first.user_id !== second.user_id) return false
+  const gap = new Date(second.created_at).getTime() - new Date(first.created_at).getTime()
+  return gap >= 0 && gap <= 2 * 60 * 1000
+}
+
 function SessionRow({ session, onOpen, onAction, actionLabel }) {
   return (
     <div className="flex items-center gap-1 rounded-xl pr-1 hover:bg-slate-50">
@@ -202,20 +208,24 @@ export default function SessionChatLauncher() {
             <>
               <div className="flex-1 space-y-2 overflow-y-auto bg-slate-50 p-3">
                 {messages.length === 0 && <p className="py-6 text-center text-sm text-slate-500">No messages yet. Say hi!</p>}
-                {messages.map((message) => {
+                {messages.map((message, index) => {
                   const mine = message.user_id === user.id
+                  const groupedWithPrevious = isSameMessageBurst(messages[index - 1], message)
+                  const groupedWithNext = isSameMessageBurst(message, messages[index + 1])
                   const sentAt = new Date(message.created_at)
                   const timeLabel = sentAt.toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' })
                   return (
-                    <div key={message.id} className={`flex ${mine ? 'justify-end' : 'justify-start'}`}>
+                    <div key={message.id} style={{ marginTop: groupedWithPrevious ? 2 : undefined }} className={`flex ${mine ? 'justify-end' : 'justify-start'}`}>
                       <div className="max-w-[85%]">
-                        <div className={`rounded-2xl px-3 py-2 text-sm ${mine ? 'rounded-br-sm bg-slate-900 text-white' : 'rounded-bl-sm bg-white text-slate-900 shadow-sm'}`}>
-                          {!mine && <p className="mb-0.5 text-xs font-semibold text-slate-500">{message.user?.name ?? 'Player'}</p>}
+                        <div className={`rounded-2xl px-3 py-2 text-sm ${mine ? `${groupedWithNext ? 'rounded-br-xl' : 'rounded-br-sm'} bg-slate-900 text-white` : `${groupedWithNext ? 'rounded-bl-xl' : 'rounded-bl-sm'} bg-white text-slate-900 shadow-sm`}`}>
+                          {!mine && !groupedWithPrevious && <p className="mb-0.5 text-xs font-semibold text-slate-500">{message.user?.name ?? 'Player'}</p>}
                           <p className="whitespace-pre-wrap break-words">{message.text}</p>
                         </div>
-                        <time dateTime={message.created_at} title={sentAt.toLocaleString()} className={`mt-1 block text-[10px] text-slate-500 ${mine ? 'text-right' : 'text-left'}`}>
-                          {timeLabel}
-                        </time>
+                        {!groupedWithNext && (
+                          <time dateTime={message.created_at} title={sentAt.toLocaleString()} className={`mt-1 block text-[10px] text-slate-500 ${mine ? 'text-right' : 'text-left'}`}>
+                            {timeLabel}
+                          </time>
+                        )}
                       </div>
                     </div>
                   )

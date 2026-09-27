@@ -1,8 +1,9 @@
 import { SPORT_EMOJI } from '../lib/constants'
-import { capitalize, formatDateTime, formatPrice } from '../lib/format'
+import { capitalize, formatDateTime, formatPrice, formatDistance } from '../lib/format'
 
-export default function SessionCard({ session, selected = false, onClick }) {
+export default function SessionCard({ session, userLocation, selected = false, onClick }) {
   const spotsLeft = session.capacity - session.participant_count
+  const distance = formatDistance(userLocation, session.court)
 
   return (
     <button
@@ -17,6 +18,7 @@ export default function SessionCard({ session, selected = false, onClick }) {
             {SPORT_EMOJI[session.sport]} {session.court.name}
           </p>
           <p className="text-sm text-slate-500">{formatDateTime(session.start_time)}</p>
+          {distance && <p className="mt-1 text-sm font-semibold text-[#1A265A]">{distance}</p>}
         </div>
         <span className="text-sm font-semibold">{formatPrice(session.price)}</span>
       </div>

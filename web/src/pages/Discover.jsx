@@ -14,6 +14,24 @@ export default function Discover() {
   const [listOpen, setListOpen] = useState(false)
   const [selectedSessionId, setSelectedSessionId] = useState(null)
   const [focusRequest, setFocusRequest] = useState(null)
+  const [userLocation, setUserLocation] = useState(null)
+  const [locationStatus, setLocationStatus] = useState('idle')
+
+  const requestLocation = () => {
+    if (!navigator.geolocation) {
+      setLocationStatus('unsupported')
+      return
+    }
+    setLocationStatus('loading')
+    navigator.geolocation.getCurrentPosition(
+      ({ coords }) => {
+        setUserLocation({ lat: coords.latitude, lng: coords.longitude, accuracy: coords.accuracy })
+        setLocationStatus('ready')
+      },
+      (error) => setLocationStatus(error.code === error.PERMISSION_DENIED ? 'denied' : 'error'),
+      { enableHighAccuracy: false, maximumAge: 0, timeout: 12000 },
+    )
+  }
 
   useEffect(() => {
     getSessions({ sport, level })
@@ -29,6 +47,7 @@ export default function Discover() {
           selectedSessionId={selectedSessionId}
           focusRequest={focusRequest}
           listOpen={listOpen}
+          userLocation={userLocation}
           onSelect={setSelectedSessionId}
           onDeselect={(sessionId) => setSelectedSessionId((current) => (current === sessionId ? null : current))}
         />
@@ -49,6 +68,20 @@ export default function Discover() {
           )}
         </button>
       )}
+
+      <div className="absolute right-3 top-3 z-[1000] flex max-w-[min(19rem,calc(100%-1.5rem))] flex-col items-end gap-1">
+        <button
+          type="button"
+          onClick={requestLocation}
+          disabled={locationStatus === 'loading'}
+          className="rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm font-semibold text-slate-900 shadow-lg transition hover:bg-slate-50 disabled:cursor-wait disabled:opacity-70 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-emerald-700"
+        >
+          {locationStatus === 'loading' ? 'Finding you…' : locationStatus === 'ready' ? 'Refresh my location' : '◎ Use my location'}
+        </button>
+        {locationStatus === 'denied' && <p role="status" className="rounded-lg bg-white/95 px-3 py-2 text-right text-xs text-slate-700 shadow">Location permission is off. You can enable it in browser settings.</p>}
+        {locationStatus === 'unsupported' && <p role="status" className="rounded-lg bg-white/95 px-3 py-2 text-right text-xs text-slate-700 shadow">Location isn’t supported by this browser.</p>}
+        {locationStatus === 'error' && <p role="status" className="rounded-lg bg-white/95 px-3 py-2 text-right text-xs text-slate-700 shadow">Couldn’t get your location. Please try again.</p>}
+      </div>
 
       <aside
         id="session-list-panel"
@@ -99,6 +132,7 @@ export default function Discover() {
             <SessionCard
               key={session.id}
               session={session}
+              userLocation={userLocation}
               selected={selectedSessionId === session.id}
               onClick={() => {
                 setSelectedSessionId(session.id)

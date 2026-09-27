@@ -1,9 +1,9 @@
 import { useEffect, useRef, useState } from 'react'
 import { divIcon } from 'leaflet'
-import { CircleMarker, MapContainer, Marker, Popup, TileLayer, useMap } from 'react-leaflet'
+import { Circle, CircleMarker, MapContainer, Marker, Popup, TileLayer, useMap } from 'react-leaflet'
 import { Link } from 'react-router-dom'
 import { MAP_CENTER, MAP_ZOOM, SPORT_COLORS } from '../lib/constants'
-import { capitalize, formatDateTime, formatPrice } from '../lib/format'
+import { capitalize, formatDateTime, formatPrice, formatDistance } from '../lib/format'
 
 function sessionBadge(startTime) {
   const start = new Date(startTime)
@@ -14,13 +14,15 @@ function sessionBadge(startTime) {
   return 'UPCOMING'
 }
 
-function ActivityCard({ session, onMouseEnter, onMouseLeave }) {
+function ActivityCard({ session, userLocation, onMouseEnter, onMouseLeave }) {
+  const distance = formatDistance(userLocation, session.court)
   return (
     <article className="drawy-activity-card" onMouseEnter={onMouseEnter} onMouseLeave={onMouseLeave}>
       <span className="drawy-activity-badge">{sessionBadge(session.start_time)}</span>
       <h2>{session.is_coach ? `${capitalize(session.sport)} lesson` : `${capitalize(session.sport)} pickup`}</h2>
       <p className="drawy-activity-location">
         {session.court.name} <span aria-hidden="true">·</span> {formatDateTime(session.start_time)}
+        {distance && <> <span aria-hidden="true">·</span> {distance}</>}
       </p>
 
       <div className="drawy-activity-players">
@@ -93,7 +95,7 @@ function groupSessions(sessions, map, zoom) {
   return groups
 }
 
-function SessionMarkers({ sessions, selectedSessionId, focusRequest, listOpen, onSelect, onDeselect }) {
+function SessionMarkers({ sessions, selectedSessionId, focusRequest, listOpen, userLocation, onSelect, onDeselect }) {
   const map = useMap()
   const [zoom, setZoom] = useState(map.getZoom())
   const [hoveredSessionId, setHoveredSessionId] = useState(null)
@@ -102,6 +104,23 @@ function SessionMarkers({ sessions, selectedSessionId, focusRequest, listOpen, o
   const closeTimer = useRef(null)
   const selectionMode = useRef(null)
   const lastFocusToken = useRef(0)
+
+  useEffect(() => {
+    if (!userLocation) return
+    const zoom = Math.max(map.getZoom(), 14)
+    const size = map.getSize()
+    const rect = map.getContainer().getBoundingClientRect()
+    const panel = listOpen ? document.getElementById('session-list-panel') : null
+    const visibleLeft = Math.max(rect.left, panel?.getBoundingClientRect().right ?? rect.left)
+    const targetX = (visibleLeft + rect.right) / 2 - rect.left
+    const targetY = size.y / 2
+    const locationPoint = map.project([userLocation.lat, userLocation.lng], zoom)
+    const centerPoint = {
+      x: locationPoint.x + size.x / 2 - targetX,
+      y: locationPoint.y + size.y / 2 - targetY,
+    }
+    map.flyTo(map.unproject([centerPoint.x, centerPoint.y], zoom), zoom, { duration: 0.45 })
+  }, [listOpen, map, userLocation])
 
   useEffect(() => {
     const updateZoom = () => setZoom(map.getZoom())
@@ -266,6 +285,7 @@ function SessionMarkers({ sessions, selectedSessionId, focusRequest, listOpen, o
         >
           <ActivityCard
             session={session}
+            userLocation={userLocation}
             onMouseEnter={keepPopupOpen}
             onMouseLeave={() => {
               if (selectionMode.current === 'hover') closeAfterHover(session.id)
@@ -277,7 +297,7 @@ function SessionMarkers({ sessions, selectedSessionId, focusRequest, listOpen, o
   })
 }
 
-export default function SessionMap({ sessions, selectedSessionId, focusRequest, listOpen, onSelect, onDeselect }) {
+export default function SessionMap({ sessions, selectedSessionId, focusRequest, listOpen, userLocation, onSelect, onDeselect }) {
   return (
     <MapContainer center={MAP_CENTER} zoom={MAP_ZOOM} className="drawy-map h-full w-full">
       <TileLayer
@@ -286,12 +306,27 @@ export default function SessionMap({ sessions, selectedSessionId, focusRequest, 
       />
       <SessionMarkers
         sessions={sessions}
+        userLocation={userLocation}
         selectedSessionId={selectedSessionId}
         focusRequest={focusRequest}
         listOpen={listOpen}
         onSelect={onSelect}
         onDeselect={onDeselect}
       />
+      {userLocation && (
+        <>
+          <Circle
+            center={[userLocation.lat, userLocation.lng]}
+            radius={userLocation.accuracy}
+            pathOptions={{ color: '#50A5B1', fillColor: '#50A5B1', fillOpacity: 0.12, weight: 1 }}
+          />
+          <CircleMarker
+            center={[userLocation.lat, userLocation.lng]}
+            radius={8}
+            pathOptions={{ color: '#FEF6ED', weight: 3, fillColor: '#1A265A', fillOpacity: 1 }}
+          />
+        </>
+      )}
     </MapContainer>
   )
 }

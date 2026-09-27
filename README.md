@@ -1,8 +1,10 @@
 # RALL-E
 
-Find people to play sports with, even if you don't know anyone in the city. RALL-E is built around activities, not people: browse open tennis and badminton sessions on a map, see the time, price, level and spots left, and join with one tap. No awkward texting, no fear of rejection.
+RALL-E helps people find a tennis or badminton game without knowing anyone in the city. Sessions are the main thing: open the map, see the time, price, level, and spots left, and join with one tap. Hosts can post a pickup game or a paid coach session. Players skip the awkward group chat and the fear of getting turned down.
 
-## Run it
+## Getting Started
+
+1. Install dependencies and start the app:
 
 ```bash
 cd web
@@ -10,59 +12,40 @@ npm install
 npm run dev
 ```
 
-Open http://localhost:5173. Without a `.env` file the app runs on mock data (`web/src/data/mock.js`), so you can build screens before the database is ready.
+2. Open the local host that is given in the terminal.
 
-## Connect Supabase
+With no `web/.env` file, the app uses the mock data in `web/src/data/mock.js`.
 
-1. Create a project at [supabase.com](https://supabase.com).
-2. For a new project, run `supabase/schema.sql`, then `supabase/seed.sql` in the SQL editor. For an existing project, run `supabase/migrations/20260926_profile_bio_and_policies.sql` instead; it adds private profile details, public visibility controls, multi-sport interests with a separate self-rated skill level for each sport, and the private coach-certificate bucket.
-3. Copy `web/.env.example` to `web/.env` and fill in the URL and publishable key from Project Settings → API.
-4. Restart `npm run dev`. The yellow "Using mock data" banner disappears.
+3. Connect the shared Supabase project when you want live data by adding .env file inside the `web` file:
 
-## Accounts (Supabase Auth)
+4. Put the project URL and publishable key in `web/.env`:
 
-With Supabase connected, players sign up with email and password (`/signup`, `/login`), then pick their sport and level on `/onboarding`. The account's id is used as their row id in the `users` table. Passwords are handled by Supabase Auth and never stored in our tables.
-
-In the Supabase dashboard:
-
-- **Authentication → Sign In / Providers → Email**: turn off **Confirm email** for the hackathon. The built-in email sender only allows a few emails per hour, so sign-ups quickly fail with a rate-limit error otherwise.
-- **Authentication → URL Configuration**: set **Site URL** to `http://localhost:5173` (and add the deployed URL later), so confirmation links open the app.
-
-Without Supabase (mock mode) there is no login: onboarding alone creates a local player.
-
-## Project structure
-
-```
-supabase/
-  schema.sql        tables, public/private profile fields, private certificate storage, row-level policies
-  migrations/       incremental database updates for existing projects
-  seed.sql          courts, users, sessions (times relative to now)
-web/src/
-  lib/api.js        every data call; switches between mock and Supabase
-  data/mock.js      mock data, same shape as the tables
-  pages/            Onboarding, Profile (view + edit), Discover (map + list), SessionDetail (join + chat), CreateSession
-  components/       Layout, SessionMap, SessionCard
+```bash
+VITE_SUPABASE_URL=https://your-project.supabase.co
+VITE_SUPABASE_ANON_KEY=your-publishable-key
 ```
 
-Screens only talk to `lib/api.js`. If you need new data, add a function there with both a mock and a Supabase branch.
+5. In the Supabase SQL editor, run `supabase/schema.sql`, then `supabase/seed.sql`, on a new database. On the existing project, run the files in `supabase/migrations/` instead.
 
-## MVP flow (the demo)
+6. In the Supabase dashboard, turn off **Confirm email** under Authentication → Sign In / Providers → Email, and set the Site URL to the one given in the terminal.
 
-Onboard (name, sport, level) → see sessions on the map → open one → join → chat with the group → create your own session. Coach sessions show a "Coach" badge.
+7. Restart `npm run dev`. The yellow “Using mock data” banner goes away.
 
-Out of scope for the MVP (roadmap slide): communities, ratings and comments, real court booking, payments, real auth.
 
-## Who owns what
+## Usage
 
-| Person | Area | Files |
-|---|---|---|
-| 1 | Onboarding, session detail, create session | `pages/Onboarding.jsx`, `pages/SessionDetail.jsx`, `pages/CreateSession.jsx` |
-| 2 | Map and discovery: pins, filters, list | `pages/Discover.jsx`, `components/SessionMap.jsx`, `components/SessionCard.jsx` |
-| 3 | Supabase, seed data, realtime chat, deploy | `supabase/`, `lib/api.js`, `data/mock.js` |
-| 4 | Design, copy, pitch, demo script, testing | `index.css`, slides, seed descriptions |
+Sign up, pick a sport and level, then use the app like this:
 
-## Git workflow
+1. **Discover** shows upcoming sessions on the map and in the list. Filters narrow by sport and level.
+2. Open a session to see the court, time, price, spots, and who is going. **Join** adds you and opens the session chat.
+3. **My sessions** lists games you are hosting or have joined.
+4. **+ Create session** posts a new game: court, start hour, length, capacity, price, and an optional coach badge.
+5. The name menu opens **Profile** (bio, sports, and private details) and **Settings**.
 
-- `git pull` before you start and before you push.
-- Commit small and push often. Stay inside your own files where you can to avoid merge conflicts.
-- Never commit `web/.env`.
+## Tech Stack
+
+- React and Vite for the web app
+- React Router for pages
+- Tailwind CSS for styling
+- Leaflet and OpenStreetMap for the session map
+- Supabase for Postgres, Auth, Row Level Security, and Realtime chat

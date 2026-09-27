@@ -210,3 +210,23 @@ body {
   input, select, textarea { background-color: var(--color-brand-cream); color: var(--color-brand-navy); accent-color: var(--color-brand-navy); }
   button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible, textarea:focus-visible { outline: 2px solid var(--color-brand-navy); outline-offset: 3px; }
 }
+
+/* Official outlined wordmark and racket symbol; keep the native aspect ratio. */
+.brand-logo {
+  display: block;
+  width: 160px;
+  height: auto;
+  flex-shrink: 0;
+}
+
+.brand-home {
+  display: inline-flex;
+  flex-shrink: 0;
+  align-items: center;
+  border-radius: 4px;
+}
+
+.brand-home:focus-visible {
+  outline: 2px solid #1a265a;
+  outline-offset: 5px;
+}

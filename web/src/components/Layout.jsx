@@ -1,3 +1,4 @@
+import BrandLogo from './BrandLogo'
 import { useEffect } from 'react'
 import { Link, NavLink, Outlet, useNavigate } from 'react-router-dom'
 import { getCurrentUser, syncCurrentUser, usingMockData } from '../lib/api'
@@ -24,11 +25,11 @@ export default function Layout() {
 
   return (
     <div className="flex h-full flex-col">
-      <header className="flex items-center justify-between border-b border-brand-navy/20 bg-brand-cream px-4 py-3">
-        <Link to="/" className="text-xl font-black tracking-tight">
-          RALL-E
+      <header className="flex flex-wrap items-center justify-between gap-x-6 gap-y-3 border-b border-brand-navy/20 bg-brand-cream px-4 py-3">
+        <Link to="/" className="brand-home" aria-label="RALL-E home">
+          <BrandLogo />
         </Link>
-        <nav className="flex items-center gap-1">
+        <nav aria-label="Main navigation" className="flex flex-wrap items-center gap-1">
           <NavLink to="/" end className={navClass}>
             Discover
           </NavLink>

@@ -1,3 +1,4 @@
+import BrandLogo from '../components/BrandLogo'
 import { useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { signIn, signUp } from '../lib/auth'
@@ -85,7 +86,7 @@ export default function AuthPage({ mode }) {
     <main className="auth-shell">
       <section className="brand-panel" aria-label="About RALL-E">
         <div className="wordmark">
-          RALL<span>-E</span>
+          <BrandLogo reverse />
         </div>
         <div className="brand-copy">
           <p className="eyebrow">Find your next game</p>

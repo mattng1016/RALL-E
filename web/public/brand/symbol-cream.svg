@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="256" height="200" viewBox="0 0 256 200" role="img" aria-label="Two connected rackets, reverse"><title>Two connected rackets, reverse</title><g fill="none" stroke-linecap="round" stroke-linejoin="round" stroke-width="8">
+      <g stroke="#FEF6ED"><ellipse cx="79" cy="64" rx="28" ry="40" transform="rotate(-25 79 64)"/>
+        <path d="M94 100 L150 179"/><path d="M143 182 L158 171" stroke-width="11"/></g>
+      <g stroke="#FEF6ED"><ellipse cx="177" cy="64" rx="28" ry="40" transform="rotate(25 177 64)"/>
+        <path d="M162 100 L106 179"/><path d="M98 171 L113 182" stroke-width="11"/></g>
+    </g></svg>

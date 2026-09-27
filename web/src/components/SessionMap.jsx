@@ -95,6 +95,20 @@ function groupSessions(sessions, map, zoom) {
   return groups
 }
 
+function groupByCourt(sessions) {
+  const groups = new Map()
+  for (const session of sessions) {
+    const key = session.court.id
+    const group = groups.get(key) ?? { sessions: [], center: [session.court.lat, session.court.lng] }
+    group.sessions.push(session)
+    groups.set(key, group)
+  }
+  for (const group of groups.values()) {
+    group.sessions.sort((a, b) => a.start_time.localeCompare(b.start_time))
+  }
+  return [...groups.values()]
+}
+
 function SessionMarkers({ sessions, selectedSessionId, focusRequest, listOpen, userLocation, onSelect, onDeselect }) {
   const map = useMap()
   const [zoom, setZoom] = useState(map.getZoom())
@@ -211,7 +225,7 @@ function SessionMarkers({ sessions, selectedSessionId, focusRequest, listOpen, u
     }, 250)
   }
 
-  const groups = zoom >= 16 ? sessions.map((session) => ({ sessions: [session], center: [session.court.lat, session.court.lng] })) : groupSessions(sessions, map, zoom)
+  const groups = zoom >= 16 ? groupByCourt(sessions) : groupSessions(sessions, map, zoom)
 
   return groups.map((group) => {
     if (group.sessions.length > 1) {
@@ -221,14 +235,43 @@ function SessionMarkers({ sessions, selectedSessionId, focusRequest, listOpen, u
         iconSize: [48, 48],
         iconAnchor: [24, 24],
       })
+      const oneCourt = new Set(group.sessions.map((session) => session.court.id)).size === 1
+      const markerRef = (marker) => {
+        for (const session of group.sessions) {
+          if (marker) markerRefs.current[session.id] = marker
+          else delete markerRefs.current[session.id]
+        }
+      }
 
       return (
         <Marker
           key={`cluster-${group.sessions.map((session) => session.id).join('-')}`}
-          position={group.center}
+          position={oneCourt ? [group.sessions[0].court.lat, group.sessions[0].court.lng] : group.center}
           icon={icon}
-          eventHandlers={{ click: () => map.flyTo(group.center, Math.min(map.getZoom() + 2, 16)) }}
-        />
+          ref={markerRef}
+          eventHandlers={oneCourt ? undefined : { click: () => map.flyTo(group.center, Math.min(map.getZoom() + 2, 16)) }}
+        >
+          {oneCourt && (
+            <Popup className="drawy-session-popup" minWidth={280} maxWidth={320} autoPan={false}>
+              <div className="drawy-court-sessions">
+                <p className="drawy-court-sessions-title">
+                  {group.sessions.length} sessions at {group.sessions[0].court.name}
+                </p>
+                {group.sessions.map((session) => (
+                  <ActivityCard
+                    key={session.id}
+                    session={session}
+                    userLocation={userLocation}
+                    onMouseEnter={keepPopupOpen}
+                    onMouseLeave={() => {
+                      if (selectionMode.current === 'hover') closeAfterHover(session.id)
+                    }}
+                  />
+                ))}
+              </div>
+            </Popup>
+          )}
+        </Marker>
       )
     }
 

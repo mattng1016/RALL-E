@@ -1,16 +1,27 @@
-# React + Vite
+# RALL-E authentication
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+This React/Vite app uses Supabase Auth for email/password signup, login, persisted
+sessions, and logout. Passwords are handled and hashed by Supabase; they never pass
+through this repository's database or browser storage directly.
 
-Currently, two official plugins are available:
+## Local setup
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+1. Create a Supabase project.
+2. In its SQL editor, run `supabase/schema.sql`.
+3. Copy `.env.example` to `.env` and enter the project URL and anonymous key from
+   Supabase **Project Settings → API**. Never put a service-role key in this file.
+4. In Supabase **Authentication → URL Configuration**, add
+   `http://localhost:5173` to the allowed redirect URLs.
+5. Run `npm install` and `npm run dev`.
 
-## React Compiler
+Supabase email confirmation is supported. If it is enabled, a new player receives a
+confirmation email and then logs in after confirming. If disabled, signup takes the
+player straight to `/dashboard`.
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+## Commands
 
-## Expanding the ESLint configuration
-
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+```bash
+npm run dev
+npm run lint
+npm run build
+```

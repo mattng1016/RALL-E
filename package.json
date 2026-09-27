@@ -1,0 +1,9 @@
+{
+  "name": "ralle-workspace",
+  "private": true,
+  "scripts": {
+    "dev": "npm --prefix my-react-app run dev",
+    "lint": "npm --prefix my-react-app run lint",
+    "build": "npm --prefix my-react-app run build"
+  }
+}

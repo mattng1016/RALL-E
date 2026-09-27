@@ -1,6 +1,8 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
+import { Link } from 'react-router-dom'
 import { getCurrentUser, getMessages, getMySessions, sendMessage, subscribeToChanges } from '../lib/api'
 import { SPORT_EMOJI } from '../lib/constants'
+import { profilePreview } from '../lib/format'
 
 function formatSessionStart(value) {
   const start = new Date(value)
@@ -218,7 +220,13 @@ export default function SessionChatLauncher() {
                     <div key={message.id} style={{ marginTop: groupedWithPrevious ? 2 : undefined }} className={`flex ${mine ? 'justify-end' : 'justify-start'}`}>
                       <div className="max-w-[85%]">
                         <div className={`rounded-2xl px-3 py-2 text-sm ${mine ? `${groupedWithNext ? 'rounded-br-xl' : 'rounded-br-sm'} bg-slate-900 text-white` : `${groupedWithNext ? 'rounded-bl-xl' : 'rounded-bl-sm'} bg-white text-slate-900 shadow-sm`}`}>
-                          {!mine && !groupedWithPrevious && <p className="mb-0.5 text-xs font-semibold text-slate-500">{message.user?.name ?? 'Player'}</p>}
+                          {!mine && !groupedWithPrevious && (
+                            <p className="mb-0.5 text-xs font-semibold">
+                              {message.user_id
+                                ? <Link to={`/profile/${message.user_id}`} title={profilePreview(message.user)} className="text-slate-500 hover:text-emerald-700 hover:underline focus-visible:underline">{message.user?.name ?? 'Player'}</Link>
+                                : <span className="text-slate-500">{message.user?.name ?? 'Player'}</span>}
+                            </p>
+                          )}
                           <p className="whitespace-pre-wrap break-words">{message.text}</p>
                         </div>
                         {!groupedWithNext && (

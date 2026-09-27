@@ -15,7 +15,7 @@ Open http://localhost:5173. Without a `.env` file the app runs on mock data (`we
 ## Connect Supabase
 
 1. Create a project at [supabase.com](https://supabase.com).
-2. In the SQL editor, run `supabase/schema.sql`, then `supabase/seed.sql`.
+2. For a new project, run `supabase/schema.sql`, then `supabase/seed.sql` in the SQL editor. For an existing project, run `supabase/migrations/20260926_profile_bio_and_policies.sql` instead; it adds private profile details, public visibility controls, multi-sport interests with a separate self-rated skill level for each sport, and the private coach-certificate bucket.
 3. Copy `web/.env.example` to `web/.env` and fill in the URL and publishable key from Project Settings → API.
 4. Restart `npm run dev`. The yellow "Using mock data" banner disappears.
 
@@ -34,12 +34,13 @@ Without Supabase (mock mode) there is no login: onboarding alone creates a local
 
 ```
 supabase/
-  schema.sql        tables, join_session() capacity check, permissive policies
+  schema.sql        tables, public/private profile fields, private certificate storage, row-level policies
+  migrations/       incremental database updates for existing projects
   seed.sql          courts, users, sessions (times relative to now)
 web/src/
   lib/api.js        every data call; switches between mock and Supabase
   data/mock.js      mock data, same shape as the tables
-  pages/            Onboarding, Discover (map + list), SessionDetail (join + chat), CreateSession
+  pages/            Onboarding, Profile (view + edit), Discover (map + list), SessionDetail (join + chat), CreateSession
   components/       Layout, SessionMap, SessionCard
 ```
 

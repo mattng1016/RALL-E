@@ -2,11 +2,67 @@ import { useCallback, useEffect, useRef, useState } from 'react'
 import { getCurrentUser, getMessages, getMySessions, sendMessage, subscribeToChanges } from '../lib/api'
 import { SPORT_EMOJI } from '../lib/constants'
 
+function formatSessionStart(value) {
+  const start = new Date(value)
+  const now = new Date()
+  const startDay = new Date(start.getFullYear(), start.getMonth(), start.getDate())
+  const today = new Date(now.getFullYear(), now.getMonth(), now.getDate())
+  const daysFromToday = Math.round((startDay - today) / 86_400_000)
+  const dayLabel = daysFromToday === 0
+    ? 'Today'
+    : daysFromToday === 1
+      ? 'Tomorrow'
+      : daysFromToday === -1
+        ? 'Yesterday'
+        : start.toLocaleDateString([], { weekday: 'short', month: 'short', day: 'numeric' })
+  const timeLabel = start.toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' })
+  return `${dayLabel} · ${timeLabel}`
+}
+
+function SessionRow({ session, onOpen, onAction, actionLabel }) {
+  return (
+    <div className="flex items-center gap-1 rounded-xl pr-1 hover:bg-slate-50">
+      <button
+        type="button"
+        onClick={onOpen}
+        className="flex min-w-0 flex-1 items-center gap-3 rounded-xl p-3 text-left focus-visible:outline-2 focus-visible:outline-emerald-700"
+      >
+        <span className="grid h-10 w-10 shrink-0 place-items-center rounded-full bg-emerald-100 text-lg">{SPORT_EMOJI[session.sport]}</span>
+        <span className="min-w-0 flex-1">
+          <span className="block truncate text-sm font-semibold text-slate-900">{session.court?.name ?? 'Sports session'}</span>
+          <span className="block truncate text-xs font-medium text-[#1A265A]">{formatSessionStart(session.start_time)}</span>
+          <span className="block truncate text-xs text-slate-500">{session.participant_count} {session.participant_count === 1 ? 'player' : 'players'} · {session.host?.name ?? 'Session chat'}</span>
+        </span>
+        <span aria-hidden="true" className="text-slate-400">›</span>
+      </button>
+      <button
+        type="button"
+        onClick={onAction}
+        aria-label={`${actionLabel} ${session.court?.name ?? 'session chat'}`}
+        title={actionLabel}
+        className="grid h-8 w-8 shrink-0 place-items-center rounded-full text-lg text-slate-400 hover:bg-white hover:text-slate-800 focus-visible:outline-2 focus-visible:outline-emerald-700"
+      >
+        {actionLabel === 'Archive' ? '×' : '↶'}
+      </button>
+    </div>
+  )
+}
+
 export default function SessionChatLauncher() {
   const user = getCurrentUser()
   const userId = user?.id
+  const archiveStorageKey = userId ? `ralle_archived_chats_${userId}` : null
   const [open, setOpen] = useState(false)
+  const [expanded, setExpanded] = useState(false)
   const [sessions, setSessions] = useState([])
+  const [archivedSessionIds, setArchivedSessionIds] = useState(() => {
+    if (!archiveStorageKey) return []
+    try {
+      return JSON.parse(localStorage.getItem(archiveStorageKey) ?? '[]')
+    } catch {
+      return []
+    }
+  })
   const [selectedSession, setSelectedSession] = useState(null)
   const selectedSessionId = selectedSession?.id
   const [messages, setMessages] = useState([])
@@ -26,6 +82,21 @@ export default function SessionChatLauncher() {
     loadSessions()
     return subscribeToChanges([{ table: 'sessions' }, { table: 'session_participants' }], loadSessions)
   }, [loadSessions])
+
+  useEffect(() => {
+    if (archiveStorageKey) localStorage.setItem(archiveStorageKey, JSON.stringify(archivedSessionIds))
+  }, [archiveStorageKey, archivedSessionIds])
+
+  const activeSessions = sessions.filter((session) => !archivedSessionIds.includes(session.id))
+  const archivedSessions = sessions.filter((session) => archivedSessionIds.includes(session.id))
+
+  function archiveSession(sessionId) {
+    setArchivedSessionIds((current) => [...new Set([...current, sessionId])])
+  }
+
+  function restoreSession(sessionId) {
+    setArchivedSessionIds((current) => current.filter((id) => id !== sessionId))
+  }
 
   const loadMessages = useCallback(() => {
     if (!selectedSessionId) return Promise.resolve()
@@ -66,7 +137,7 @@ export default function SessionChatLauncher() {
   return (
     <div className="fixed bottom-4 right-4 z-[1200] flex flex-col items-end gap-3">
       {open && (
-        <section className="flex h-[min(32rem,calc(100dvh-6rem))] w-[min(22rem,calc(100vw-2rem))] flex-col overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-2xl" aria-label="Session chats">
+        <section className={`flex ${expanded ? 'h-[min(42rem,calc(100dvh-6rem))] w-[min(32rem,calc(100vw-2rem))]' : 'h-[min(32rem,calc(100dvh-6rem))] w-[min(22rem,calc(100vw-2rem))]'} flex-col overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-2xl transition-[width,height] duration-200`} aria-label="Session chats">
           <header className="flex items-center gap-2 border-b border-slate-200 bg-white px-3 py-3">
             {selectedSession && (
               <button
@@ -80,8 +151,18 @@ export default function SessionChatLauncher() {
             )}
             <div className="min-w-0 flex-1">
               <h2 className="truncate font-bold text-slate-900">{selectedSession?.court?.name ?? 'Session chats'}</h2>
-              <p className="text-xs text-slate-500">{selectedSession ? 'Chat with your session' : `${sessions.length} joined ${sessions.length === 1 ? 'session' : 'sessions'}`}</p>
+              <p className="text-xs text-slate-500">{selectedSession ? 'Chat with your session' : `${activeSessions.length} open ${activeSessions.length === 1 ? 'chat' : 'chats'}`}</p>
             </div>
+            <button
+              type="button"
+              onClick={() => setExpanded((value) => !value)}
+              aria-label={expanded ? 'Shrink chats panel' : 'Expand chats panel'}
+              aria-pressed={expanded}
+              title={expanded ? 'Shrink chats panel' : 'Expand chats panel'}
+              className="rounded-lg px-2 py-1 text-base leading-none text-slate-500 hover:bg-slate-100"
+            >
+              {expanded ? '↙' : '↗'}
+            </button>
             <button type="button" onClick={() => setOpen(false)} aria-label="Close chats" className="rounded-lg px-2 py-1 text-xl leading-none text-slate-500 hover:bg-slate-100">×</button>
           </header>
 
@@ -89,23 +170,33 @@ export default function SessionChatLauncher() {
 
           {!selectedSession ? (
             <div className="flex-1 space-y-1 overflow-y-auto p-2">
-              {sessions.length === 0 ? (
-                <p className="p-4 text-center text-sm text-slate-500">Join or host a session to start chatting.</p>
-              ) : sessions.map((session) => (
-                <button
+              {activeSessions.length === 0 ? (
+                <p className="p-4 text-center text-sm text-slate-500">{archivedSessions.length > 0 ? 'No open chats. Your archived chats are below.' : 'Join or host a session to start chatting.'}</p>
+              ) : activeSessions.map((session) => (
+                <SessionRow
                   key={session.id}
-                  type="button"
-                  onClick={() => { setSelectedSession(session); setError('') }}
-                  className="flex w-full items-center gap-3 rounded-xl p-3 text-left hover:bg-slate-50 focus-visible:outline-2 focus-visible:outline-emerald-700"
-                >
-                  <span className="grid h-10 w-10 shrink-0 place-items-center rounded-full bg-emerald-100 text-lg">{SPORT_EMOJI[session.sport]}</span>
-                  <span className="min-w-0 flex-1">
-                    <span className="block truncate text-sm font-semibold text-slate-900">{session.court?.name ?? 'Sports session'}</span>
-                    <span className="block truncate text-xs text-slate-500">{session.participant_count} {session.participant_count === 1 ? 'player' : 'players'} · {session.host?.name ?? 'Session chat'}</span>
-                  </span>
-                  <span aria-hidden="true" className="text-slate-400">›</span>
-                </button>
+                  session={session}
+                  onOpen={() => { setSelectedSession(session); setError('') }}
+                  onAction={() => archiveSession(session.id)}
+                  actionLabel="Archive"
+                />
               ))}
+              {archivedSessions.length > 0 && (
+                <details className="mt-3 border-t border-slate-200 pt-2">
+                  <summary className="cursor-pointer px-2 py-2 text-xs font-semibold text-slate-500 hover:text-slate-800">Archived chats ({archivedSessions.length})</summary>
+                  <div className="space-y-1 pt-1">
+                    {archivedSessions.map((session) => (
+                      <SessionRow
+                        key={session.id}
+                        session={session}
+                        onOpen={() => { setSelectedSession(session); setError('') }}
+                        onAction={() => restoreSession(session.id)}
+                        actionLabel="Restore"
+                      />
+                    ))}
+                  </div>
+                </details>
+              )}
             </div>
           ) : (
             <>
@@ -113,11 +204,18 @@ export default function SessionChatLauncher() {
                 {messages.length === 0 && <p className="py-6 text-center text-sm text-slate-500">No messages yet. Say hi!</p>}
                 {messages.map((message) => {
                   const mine = message.user_id === user.id
+                  const sentAt = new Date(message.created_at)
+                  const timeLabel = sentAt.toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' })
                   return (
                     <div key={message.id} className={`flex ${mine ? 'justify-end' : 'justify-start'}`}>
-                      <div className={`max-w-[85%] rounded-2xl px-3 py-2 text-sm ${mine ? 'rounded-br-sm bg-slate-900 text-white' : 'rounded-bl-sm bg-white text-slate-900 shadow-sm'}`}>
-                        {!mine && <p className="mb-0.5 text-xs font-semibold text-slate-500">{message.user?.name ?? 'Player'}</p>}
-                        <p className="whitespace-pre-wrap break-words">{message.text}</p>
+                      <div className="max-w-[85%]">
+                        <div className={`rounded-2xl px-3 py-2 text-sm ${mine ? 'rounded-br-sm bg-slate-900 text-white' : 'rounded-bl-sm bg-white text-slate-900 shadow-sm'}`}>
+                          {!mine && <p className="mb-0.5 text-xs font-semibold text-slate-500">{message.user?.name ?? 'Player'}</p>}
+                          <p className="whitespace-pre-wrap break-words">{message.text}</p>
+                        </div>
+                        <time dateTime={message.created_at} title={sentAt.toLocaleString()} className={`mt-1 block text-[10px] text-slate-500 ${mine ? 'text-right' : 'text-left'}`}>
+                          {timeLabel}
+                        </time>
                       </div>
                     </div>
                   )
@@ -149,7 +247,7 @@ export default function SessionChatLauncher() {
         aria-label={open ? 'Close session chats' : 'Open session chats'}
         className="inline-flex items-center gap-2 rounded-full bg-slate-900 px-5 py-3 font-semibold text-white shadow-xl transition hover:bg-slate-700 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-emerald-700"
       >
-        <span aria-hidden="true">▰</span> Chats {sessions.length > 0 && <span className="rounded-full bg-white/20 px-2 py-0.5 text-xs">{sessions.length}</span>}
+        <span aria-hidden="true">▰</span> Chats {activeSessions.length > 0 && <span className="rounded-full bg-white/20 px-2 py-0.5 text-xs">{activeSessions.length}</span>}
       </button>
     </div>
   )

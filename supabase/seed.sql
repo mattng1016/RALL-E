@@ -8,7 +8,8 @@ insert into courts (id, name, sport, lat, lng, price_per_hour) values
   ('c5', 'UBC Birdcoop Gym', 'badminton', 49.2669, -123.2491, 5),
   ('c6', 'Hillcrest Community Centre', 'badminton', 49.2437, -123.1076, 6),
   ('c7', 'Richmond Olympic Oval', 'badminton', 49.1747, -123.1527, 8),
-  ('c8', 'Kerrisdale Community Centre', 'badminton', 49.2340, -123.1560, 5);
+  ('c8', 'Kerrisdale Community Centre', 'badminton', 49.2340, -123.1560, 5),
+  ('c9', 'Stage 18 Badminton Richmond', 'badminton', 49.197, -123.071, 20);
 
 insert into users (id, name, sport, level) values
   ('u1', 'Mai', 'badminton', 'beginner'),

@@ -2,6 +2,10 @@
 
 **Find your people. Get out and play.**
 
+<p align="center">
+  <img width="1000" alt="Session details" src="https://github.com/user-attachments/assets/2f3882d8-98ec-4ada-a17b-32d0755bd866" />
+</p>
+
 RALL-E is a community sports app for people who want to play but do not already have a group. Discover nearby pickup games, compare the details, and join a session with other local players.
 
 > Built as a hackathon project to make it easier for newcomers and casual athletes to find welcoming games in their community.
@@ -60,6 +64,13 @@ web/src/
 supabase/       Database schema, seed data, and migrations
 ```
 
-## Resume summary
+## Summary
 
 Designed and built a map-based sports matchmaking MVP with session discovery and creation, Supabase-backed authentication and data, real-time group chat, and configurable player profiles.
+
+## More images 
+<p align="center">
+    <img width="<img width="1710" height="985" alt="Screenshot 2026-09-28 at 11 16 29 AM" src="https://github.com/user-attachments/assets/91b6494c-7e6d-4551-8979-e96a28be9841" />
+    <img width="1710" height="982" alt="Screenshot 2026-09-28 at 11 16 16 AM" src="https://github.com/user-attachments/assets/d970e23c-e274-452f-b4c3-dd5adb8ba953" />
+    <img width="" alt="Player profile" src="https://github.com/user-attachments/assets/bb01cb31-e74b-41e9-8f4a-fe4e7e1b9bd3" />
+</p>
